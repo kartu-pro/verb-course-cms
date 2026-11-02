@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Georgian Verb Contributor Portal</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Georgian Verb Course</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans min-h-screen" x-data="app()" x-init="init()">
 
-    <!-- Header / Navbar -->
     <header class="bg-white shadow border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold text-indigo-600">🇬🇪 Georgian Verb Contributor Portal</h1>
+        <h1 class="text-xl font-bold text-indigo-600">Georgian Verb Course</h1>
         <template x-if="user">
             <div class="flex items-center space-x-4">
                 <span class="text-sm text-gray-600" x-text="user.email"></span>
@@ -26,10 +22,10 @@
 
     <main class="max-w-4xl mx-auto p-6">
 
-        <!-- 1. LOGIN VIEW -->
+        <!-- LOGIN VIEW -->
         <template x-if="!user">
             <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow border border-gray-200 mt-12">
-                <h2 class="text-2xl font-semibold mb-6 text-center">Native Contributor Login</h2>
+                <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
                 <form @submit.prevent="login()" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Email</label>
@@ -45,24 +41,81 @@
             </div>
         </template>
 
-        <!-- 2. MAIN APP VIEW (Authenticated) -->
+        <!-- MAIN APP VIEW -->
         <template x-if="user">
             <div>
-                <!-- Navigation Tabs -->
                 <div class="flex space-x-6 border-b border-gray-200 mb-6 pb-2">
+                    <button @click="currentTab = 'stats'; fetchStats()" :class="currentTab === 'stats' ? 'border-indigo-600 text-indigo-600 font-bold' : 'text-gray-500'" class="pb-2 border-b-2">Dashboard</button>
                     <button @click="currentTab = 'write'" :class="currentTab === 'write' ? 'border-indigo-600 text-indigo-600 font-bold' : 'text-gray-500'" class="pb-2 border-b-2">Writing Tasks</button>
                     <button @click="currentTab = 'record'" :class="currentTab === 'record' ? 'border-indigo-600 text-indigo-600 font-bold' : 'text-gray-500'" class="pb-2 border-b-2">Recording Tasks</button>
-                    <button @click="currentTab = 'stats'; fetchStats()" :class="currentTab === 'stats' ? 'border-indigo-600 text-indigo-600 font-bold' : 'text-gray-500'" class="pb-2 border-b-2">My Contribution Stats</button>
                 </div>
+
+                <!-- STATS TAB -->
+                <template x-if="currentTab === 'stats'">
+                    <div class="space-y-6 max-w-2xl mx-auto">
+                        <h3 class="text-xl font-bold text-gray-800">Your Dashboard</h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Writing Stats Card -->
+                            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                                <div class="border-b pb-2 flex justify-between items-center">
+                                    <h4 class="font-bold text-indigo-600">Writing Tasks</h4>
+                                    <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-medium" x-text="'Total: ' + stats.totalWritingAssignments">0</span>
+                                </div>
+                                
+                                <div class="text-center py-2 bg-indigo-50/50 rounded-md">
+                                    <p class="text-3xl font-extrabold text-gray-800" x-text="stats.writtenCount">0</p>
+                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mt-1">Examples Written</p>
+                                </div>
+
+                                <div class="text-xs text-gray-600 space-y-1.5 pt-1">
+                                    <div class="flex justify-between py-1 border-b border-gray-100">
+                                        <span>✅ Approved:</span>
+                                        <span class="font-semibold text-gray-800" x-text="stats.writtenApprovedCount">0</span>
+                                    </div>
+                                    <div class="flex justify-between py-1">
+                                        <span>🚩 Flagged:</span>
+                                        <span class="font-semibold text-red-600" x-text="stats.writtenFlaggedCount">0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recording Stats Card -->
+                            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                                <div class="border-b pb-2 flex justify-between items-center">
+                                    <h4 class="font-bold text-emerald-600">Recording Tasks</h4>
+                                    <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium" x-text="'Total: ' + stats.totalRecordingAssignments">0</span>
+                                </div>
+                                
+                                <div class="text-center py-2 bg-emerald-50/50 rounded-md">
+                                    <p class="text-3xl font-extrabold text-gray-800" x-text="stats.recordedCount">0</p>
+                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mt-1">Recordings Submitted</p>
+                                </div>
+
+                                <div class="text-xs text-gray-600 space-y-1.5 pt-1">
+                                    <div class="flex justify-between py-1 border-b border-gray-100">
+                                        <span>✅ Approved:</span>
+                                        <span class="font-semibold text-gray-800" x-text="stats.recordedApprovedCount">0</span>
+                                    </div>
+                                    <div class="flex justify-between py-1">
+                                        <span>🚩 Flagged:</span>
+                                        <span class="font-semibold text-red-600" x-text="stats.recordedFlaggedCount">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
 
                 <!-- WRITING TAB -->
                 <template x-if="currentTab === 'write'">
                     <div class="space-y-6">
-                        <!-- Guidelines Reminder -->
                         <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded text-sm text-blue-800 space-y-1">
                             <p class="font-semibold">💡 Writer Guidelines:</p>
-                            <p>• Write simple sentences suitable for language learners.</p>
-                            <p>• Vary the vocabulary across different examples for the same verb form.</p>
+                            <p>• <strong>Keep sentences short:</strong> Use simple, everyday sentences that are easy for beginners to understand.</p>
+                            <p>• <strong>Show meaning clearly:</strong> Make it obvious why this specific verb form is being used.</p>
+                            <p>• <strong>Mix up your words:</strong> Do not repeat the same names, words, or nouns across different examples for the same verb.</p>
+                            <p>• <strong>Use standard Georgian:</strong> Write in natural, standard Georgian. Avoid slang or regional dialects.</p>
                         </div>
 
                         <h3 class="text-lg font-semibold">Assigned Writing Tasks</h3>
@@ -85,11 +138,12 @@
                 <!-- RECORDING TAB -->
                 <template x-if="currentTab === 'record'">
                     <div class="space-y-6">
-                        <!-- Guidelines Reminder -->
                         <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded text-sm text-amber-800 space-y-1">
                             <p class="font-semibold">🎙️ Recorder Guidelines:</p>
-                            <p>• Use a clear microphone and record in a quiet place without background noise.</p>
-                            <p>• If the example sentence is unnatural, grammatically incorrect, or poorly written, click <strong>Flag as Poor Quality</strong>.</p>
+                            <p>• <strong>Find a quiet room:</strong> Record in a quiet space with no background noise (turn off fans or background sounds).</p>
+                            <p>• <strong>Speak clearly and steadily:</strong> Read at a calm, natural pace so language learners can catch every sound.</p>
+                            <p>• <strong>Check your audio:</strong> Always listen to your recording using the play button once before uploading.</p>
+                            <p>• <strong>Flag bad examples:</strong> If a written sentence is grammatically incorrect or unnatural, click <strong>Flag as Poor Quality</strong> instead of recording it.</p>
                         </div>
 
                         <h3 class="text-lg font-semibold">Assigned Recording Tasks</h3>
@@ -100,20 +154,17 @@
                                         <span class="text-xs uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium" x-text="task.forms.tense"></span>
                                         <p class="text-sm text-gray-500 mt-1">Target Form: <strong class="text-gray-800 text-base" x-text="task.forms.form"></strong></p>
                                     </div>
-                                    <!-- Flag Button -->
                                     <button @click="flagExample(task)" class="text-xs text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded">🚩 Flag as Poor Quality</button>
                                 </div>
 
-                                <!-- Example Display -->
                                 <div class="bg-gray-50 p-4 rounded border border-gray-200">
                                     <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Example Sentence to Record:</p>
                                     <p class="text-gray-900 font-medium text-lg" x-text="task.example_text || 'Loading example...'"></p>
                                 </div>
 
-                                <!-- Audio Recorder Controls -->
                                 <div class="flex items-center space-x-3 pt-2" x-data="audioRecorder(task)">
                                     <template x-if="!recording && !audioUrl">
-                                        <button @click="startRecording()" class="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 font-medium flex items-center space-x-1"><span>🔴 Start Recording</span></button>
+                                        <button @click="startRecording()" class="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 font-medium">🔴 Start Recording</button>
                                     </template>
                                     <template x-if="recording">
                                         <button @click="stopRecording()" class="bg-gray-800 text-white px-4 py-2 rounded text-sm animate-pulse font-medium">⏹️ Stop Recording</button>
@@ -132,36 +183,6 @@
                     </div>
                 </template>
 
-                <!-- STATS & TRACKING TAB -->
-                <template x-if="currentTab === 'stats'">
-                    <div class="space-y-6">
-                        <h3 class="text-lg font-semibold">Your Contribution Statistics</h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Writing Stats Card -->
-                            <div class="bg-white p-6 rounded shadow border border-gray-200 space-y-3">
-                                <h4 class="font-bold text-indigo-600 text-base border-b pb-2">Writing Contribution</h4>
-                                <p class="text-3xl font-extrabold text-gray-800" x-text="stats.writtenCount">0</p>
-                                <p class="text-sm text-gray-500">Total examples written by you.</p>
-                                <div class="pt-2 text-xs text-gray-600 space-y-1 bg-gray-50 p-3 rounded">
-                                    <p>✅ Recorded / Approved: <span class="font-semibold text-gray-800" x-text="stats.writtenRecordedCount">0</span></p>
-                                    <p>🚩 Flagged by Reviewers: <span class="font-semibold text-red-600" x-text="stats.writtenFlaggedCount">0</span></p>
-                                </div>
-                            </div>
-
-                            <!-- Recording Stats Card -->
-                            <div class="bg-white p-6 rounded shadow border border-gray-200 space-y-3">
-                                <h4 class="font-bold text-emerald-600 text-base border-b pb-2">Recording Contribution</h4>
-                                <p class="text-3xl font-extrabold text-gray-800" x-text="stats.recordedCount">0</p>
-                                <p class="text-sm text-gray-500">Total audio recordings submitted by you.</p>
-                                <div class="pt-2 text-xs text-gray-600 space-y-1 bg-gray-50 p-3 rounded">
-                                    <p>✅ Reviewed by Admin: <span class="font-semibold text-gray-800" x-text="stats.recordedReviewedCount">0</span></p>
-                                    <p>🚩 Flagged by Admin: <span class="font-semibold text-red-600" x-text="stats.recordedFlaggedCount">0</span></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
 
             </div>
         </template>
@@ -169,29 +190,40 @@
     </main>
 
     <script>
-        // Replace with your Supabase credentials
         const SUPABASE_URL = 'https://ygxwvmhdpqbumstoqayg.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_F05L1QI1ClkusTzEaBzoyQ_3YcYAaOn';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Prevent duplicate declaration errors
+        window.supabaseClient = window.supabaseClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const db = window.supabaseClient;
 
         function app() {
             return {
                 user: null,
-                currentTab: 'write',
+                currentTab: 'stats',
                 email: '',
                 password: '',
                 errorMessage: '',
                 writingTasks: [],
                 recordingTasks: [],
-                stats: { writtenCount: 0, writtenRecordedCount: 0, writtenFlaggedCount: 0, recordedCount: 0, recordedReviewedCount: 0, recordedFlaggedCount: 0 },
+                stats: { 
+                    totalWritingAssignments: 0, 
+                    writtenCount: 0, 
+                    writtenApprovedCount: 0, 
+                    writtenFlaggedCount: 0, 
+                    totalRecordingAssignments: 0, 
+                    recordedCount: 0, 
+                    recordedApprovedCount: 0, 
+                    recordedFlaggedCount: 0 
+                },
 
                 async init() {
-                    const { data: { session } } = await supabase.auth.getSession();
+                    const { data: { session } } = await db.auth.getSession();
                     if (session) {
                         this.user = session.user;
                         await this.fetchTasks();
                     }
-                    supabase.auth.onAuthStateChange(async (event, session) => {
+                    db.auth.onAuthStateChange(async (event, session) => {
                         this.user = session?.user || null;
                         if (this.user) await this.fetchTasks();
                     });
@@ -199,19 +231,18 @@
 
                 async login() {
                     this.errorMessage = '';
-                    const { error } = await supabase.auth.signInWithPassword({ email: this.email, password: this.password });
+                    const { error } = await db.auth.signInWithPassword({ email: this.email, password: this.password });
                     if (error) this.errorMessage = error.message;
                 },
 
                 async logout() {
-                    await supabase.auth.signOut();
+                    await db.auth.signOut();
                     this.writingTasks = [];
                     this.recordingTasks = [];
                 },
 
                 async fetchTasks() {
-                    // Fetch writing tasks
-                    const { data: wData } = await supabase
+                    const { data: wData } = await db
                         .from('assignments')
                         .select('id, form_id, forms(masdar, tense, form)')
                         .eq('user_id', this.user.id)
@@ -219,8 +250,7 @@
                         .eq('status', 'pending');
                     this.writingTasks = (wData || []).map(t => ({ ...t, exampleText: '' }));
 
-                    // Fetch recording tasks
-                    const { data: rData } = await supabase
+                    const { data: rData } = await db
                         .from('assignments')
                         .select('id, form_id, forms(masdar, tense, form)')
                         .eq('user_id', this.user.id)
@@ -229,7 +259,7 @@
                     
                     if (rData) {
                         for (let task of rData) {
-                            const { data: exData } = await supabase.from('examples').select('text, id').eq('form_id', task.form_id).single();
+                            const { data: exData } = await db.from('examples').select('text, id').eq('form_id', task.form_id).single();
                             task.example_text = exData ? exData.text : 'No example written yet.';
                             task.example_id = exData ? exData.id : null;
                         }
@@ -238,29 +268,39 @@
                 },
 
                 async fetchStats() {
-                    // Writing stats
-                    const { data: writtenExamples } = await supabase.from('examples').select('*').eq('created_by', this.user.id);
-                    this.stats.writtenCount = writtenExamples ? writtenExamples.length : 0;
-                    this.stats.writtenRecordedCount = writtenExamples ? writtenExamples.filter(e => e.audio_path && e.text_status === 'approved').length : 0;
-                    this.stats.writtenFlaggedCount = writtenExamples ? writtenExamples.filter(e => e.text_status === 'flagged').length : 0;
+                    // Total writing assignments given to user
+                    const { count: totalW } = await db.from('assignments').select('*', { count: 'exact', head: true }).eq('user_id', this.user.id).eq('task_type', 'write');
+                    this.stats.totalWritingAssignments = totalW || 0;
 
-                    // Recording stats
-                    const { data: recordedExamples } = await supabase.from('examples').select('*').eq('recorded_by', this.user.id);
-                    this.stats.recordedCount = recordedExamples ? recordedExamples.length : 0;
-                    this.stats.recordedReviewedCount = recordedExamples ? recordedExamples.filter(e => e.audio_status === 'approved').length : 0;
-                    this.stats.recordedFlaggedCount = recordedExamples ? recordedExamples.filter(e => e.audio_status === 'flagged').length : 0;
-                }
+                    // Examples written by user
+                    const { data: written } = await db.from('examples').select('*').eq('created_by', this.user.id);
+                    this.stats.writtenCount = written ? written.length : 0;
+                    this.stats.writtenApprovedCount = written ? written.filter(e => e.text_status === 'approved').length : 0;
+                    this.stats.writtenFlaggedCount = written ? written.filter(e => e.text_status === 'flagged').length : 0;
+
+                    // Total recording assignments given to user
+                    const { count: totalR } = await db.from('assignments').select('*', { count: 'exact', head: true }).eq('user_id', this.user.id).eq('task_type', 'record');
+                    this.stats.totalRecordingAssignments = totalR || 0;
+
+                    // Recordings submitted by user
+                    const { data: recorded } = await db.from('examples').select('*').eq('recorded_by', this.user.id);
+                    this.stats.recordedCount = recorded ? recorded.length : 0;
+                    this.stats.recordedApprovedCount = recorded ? recorded.filter(e => e.audio_status === 'approved').length : 0;
+                    this.stats.recordedFlaggedCount = recorded ? recorded.filter(e => e.audio_status === 'flagged').length : 0;
+                },
+
                 async submitExample(task) {
                     if (!task.exampleText.trim()) return alert('Please enter an example sentence.');
                     
-                    const { error } = await supabase.from('examples').insert({
+                    const { error } = await db.from('examples').insert({
                         form_id: task.form_id,
                         text: task.exampleText,
-                        created_by: this.user.id
+                        created_by: this.user.id,
+                        text_status: 'pending'
                     });
                     if (error) { alert(error.message); return; }
 
-                    await supabase.from('assignments').update({ status: 'completed' }).eq('id', task.id);
+                    await db.from('assignments').update({ status: 'completed' }).eq('id', task.id);
                     alert('Example submitted successfully!');
                     this.fetchTasks();
                 },
@@ -268,14 +308,13 @@
                 async flagExample(task) {
                     if (!task.example_id) return alert('No example found to flag.');
                     
-                    // Update text status to flagged
-                    const { error } = await supabase.from('examples')
+                    const { error } = await db.from('examples')
                         .update({ text_status: 'flagged' })
                         .eq('id', task.example_id);
                     
                     if (error) { alert(error.message); return; }
 
-                    await supabase.from('assignments').update({ status: 'completed' }).eq('id', task.id);
+                    await db.from('assignments').update({ status: 'completed' }).eq('id', task.id);
                     alert('Example text flagged as poor quality.');
                     this.fetchTasks();
                 }
@@ -317,20 +356,19 @@
                     if (!task.example_id) return alert('No example sentence exists for this form yet.');
                     const fileName = `${task.form_id}-${Date.now()}.webm`;
                     
-                    const { data, error } = await supabase.storage.from('audio-bucket').upload(fileName, this.audioBlob);
+                    const { data, error } = await window.supabaseClient.storage.from('audio-bucket').upload(fileName, this.audioBlob);
                     if (error) { alert(error.message); return; }
 
-                    const { data: { user } } = await supabase.auth.getUser();
+                    const { data: { user } } = await window.supabaseClient.auth.getUser();
 
-                    // Update example with audio path and set audio status to pending review
-                    await supabase.from('examples').update({
+                    await window.supabaseClient.from('examples').update({
                         audio_path: data.path,
                         recorded_by: user.id,
                         recorded_on: new Date(),
-                        audio_status: 'pending' // Awaiting admin review
+                        audio_status: 'pending'
                     }).eq('id', task.example_id);
 
-                    await supabase.from('assignments').update({ status: 'completed' }).eq('id', task.id);
+                    await window.supabaseClient.from('assignments').update({ status: 'completed' }).eq('id', task.id);
 
                     alert('Recording uploaded successfully!');
                     window.location.reload();
