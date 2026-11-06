@@ -3,39 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Georgian Verb Corpus Collection</title>
+    <title>Georgian Verb Course</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans min-h-screen" x-data="app()" x-init="init()">
 
+    <!-- Toast Notification Banner -->
+    <div x-show="toast.show" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:leave="transition ease-in duration-200"
+         :class="toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white'"
+         class="fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center space-x-2">
+        <span x-text="toast.message"></span>
+    </div>
+
     <!-- Top Header -->
     <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-3 flex justify-between items-center sticky top-0 z-40">
         <div class="flex items-center space-x-4">
-            <!-- Mobile Hamburger Button -->
             <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-600 focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
             <div>
-                <h1 class="text-lg font-bold text-indigo-600">Georgian Verb Corpus</h1>
+                <h1 class="text-lg font-bold text-indigo-600">Georgian Verb Course</h1>
                 <span class="text-xs text-gray-500 capitalize" x-text="profile ? 'Role: ' + profile.role : ''"></span>
             </div>
         </div>
         <template x-if="user">
             <div class="flex items-center space-x-4">
                 <span class="text-sm text-gray-600 hidden sm:inline" x-text="user.email"></span>
-                <button @click="logout()" class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200">Logout</button>
+                <button @click="logout()" class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200">Sign Out</button>
             </div>
         </template>
     </header>
 
-    <!-- App Layout: Sidebar on Desktop, Main Content area -->
+    <!-- App Layout -->
     <div class="flex min-h-[calc(100vh-57px)]">
 
-        <!-- Desktop Sidebar & Mobile Slide-over Navigation -->
+        <!-- Sidebar Navigation -->
         <aside :class="mobileMenuOpen ? 'block' : 'hidden'" class="absolute md:relative z-30 bg-white border-r border-gray-200 w-64 p-4 space-y-2 md:block shadow-sm">
             <div class="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">Navigation</div>
             <button @click="currentTab = 'stats'; fetchStats(); mobileMenuOpen = false" :class="currentTab === 'stats' ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-3 py-2 rounded text-sm transition">Dashboard</button>
@@ -45,7 +53,7 @@
             <template x-if="profile && profile.role === 'admin'">
                 <div class="pt-4 mt-4 border-t border-gray-200 space-y-2">
                     <div class="text-xs font-bold text-purple-600 uppercase tracking-wider px-3 mb-2">Admin Panel</div>
-                    <button @click="currentTab = 'admin_assign'; fetchAdminData(); mobileMenuOpen = false" :class="currentTab === 'admin_assign' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-3 py-2 rounded text-sm transition">Forms & Assign</button>
+                    <button @click="currentTab = 'admin_assign'; fetchAdminData(); mobileMenuOpen = false" :class="currentTab === 'admin_assign' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-3 py-2 rounded text-sm transition">Form Assignments</button>
                     <button @click="currentTab = 'admin_review_audio'; fetchAdminRecordings(); mobileMenuOpen = false" :class="currentTab === 'admin_review_audio' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-3 py-2 rounded text-sm transition">Review Recordings</button>
                     <button @click="currentTab = 'admin_flags'; fetchAdminFlags(); mobileMenuOpen = false" :class="currentTab === 'admin_flags' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-3 py-2 rounded text-sm transition">Flagged Items</button>
                 </div>
@@ -58,17 +66,17 @@
             <!-- LOGIN VIEW -->
             <template x-if="!user">
                 <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow border border-gray-200 mt-12">
-                    <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+                    <h2 class="text-2xl font-semibold mb-6 text-center">Sign In</h2>
                     <form @submit.prevent="login()" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Email</label>
+                            <label class="block text-sm font-medium text-gray-700">Email Address</label>
                             <input type="email" x-model="email" required class="mt-1 w-full p-2 border rounded border-gray-300">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Password</label>
                             <input type="password" x-model="password" required class="mt-1 w-full p-2 border rounded border-gray-300">
                         </div>
-                        <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700 font-medium">Sign In</button>
+                        <button type="submit" :disabled="submitting" class="w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700 font-medium disabled:opacity-50">Sign In</button>
                         <p class="text-red-500 text-sm mt-2 text-center" x-text="errorMessage"></p>
                     </form>
                 </div>
@@ -78,336 +86,304 @@
             <template x-if="user">
             <div>
 
-                <!-- STATS TAB -->
-                <template x-if="currentTab === 'stats'">
-                    <div class="space-y-6 max-w-3xl mx-auto">
-                        <h3 class="text-xl font-bold text-gray-800">Your Activity Dashboard</h3>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <!-- Writing Stats Breakdown -->
-                            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
-                                <h4 class="font-bold text-indigo-600 border-b pb-2 flex justify-between items-center">
-                                    <span>Writing Tasks</span>
-                                    <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded" x-text="'Total: ' + (stats.wReady + stats.wBlockedForm + stats.wSubmitted + stats.wApproved + stats.wFlagged)"></span>
-                                </h4>
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between p-2 bg-gray-50 rounded">
-                                        <span class="text-gray-600">Ready to Write:</span>
-                                        <span class="font-bold text-gray-800" x-text="stats.wReady">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-red-50 rounded">
-                                        <span class="text-red-700">Blocked (Form Flagged):</span>
-                                        <span class="font-bold text-red-800" x-text="stats.wBlockedForm">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-blue-50 rounded">
-                                        <span class="text-blue-700">Submitted (Complete):</span>
-                                        <span class="font-bold text-blue-800" x-text="stats.wSubmitted">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-emerald-50 rounded">
-                                        <span class="text-emerald-700">Approved:</span>
-                                        <span class="font-bold text-emerald-800" x-text="stats.wApproved">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-red-50 rounded">
-                                        <span class="text-red-700">Flagged:</span>
-                                        <span class="font-bold text-red-800" x-text="stats.wFlagged">0</span>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- LOADING SPINNER -->
+                <div x-show="loading" class="flex justify-center items-center py-16">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                </div>
 
-                            <!-- Recording Stats Breakdown -->
-                            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
-                                <h4 class="font-bold text-emerald-600 border-b pb-2 flex justify-between items-center">
-                                    <span>Recording Tasks</span>
-                                    <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded" x-text="'Total: ' + (stats.rReady + stats.rWaitingOnPeer + stats.rBlockedSentence + stats.rSubmitted + stats.rApproved + stats.rFlagged)"></span>
-                                </h4>
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between p-2 bg-gray-50 rounded">
-                                        <span class="text-gray-600">Ready to Record:</span>
-                                        <span class="font-bold text-gray-800" x-text="stats.rReady">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-amber-50 rounded">
-                                        <span class="text-amber-700">Blocked (Waiting on Peer):</span>
-                                        <span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-red-50 rounded" x-show="stats.rBlockedSentence > 0">
-                                        <span class="text-red-700">Blocked (Sentence Flagged):</span>
-                                        <span class="font-bold text-red-800" x-text="stats.rBlockedSentence">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-blue-50 rounded">
-                                        <span class="text-blue-700">Submitted (Complete):</span>
-                                        <span class="font-bold text-blue-800" x-text="stats.rSubmitted">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-emerald-50 rounded">
-                                        <span class="text-emerald-700">Approved:</span>
-                                        <span class="font-bold text-emerald-800" x-text="stats.rApproved">0</span>
-                                    </div>
-                                    <div class="flex justify-between p-2 bg-red-50 rounded">
-                                        <span class="text-red-700">Flagged:</span>
-                                        <span class="font-bold text-red-800" x-text="stats.rFlagged">0</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </template>
-
-                <!-- WRITING TAB -->
-                <template x-if="currentTab === 'write'">
-                    <div class="space-y-4 max-w-3xl mx-auto" x-data="{ expandedId: null, exampleInputs: {}, flagModalOpen: false, activeFormObj: null, flagComment: '' }">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Assigned Writing Tasks</h3>
-                        
-                        <template x-for="item in flatWritingTasks" :key="item.formObj.id">
-                            <div class="border rounded-lg bg-white shadow-sm overflow-hidden">
-                                <!-- Card Header: Lists Masdar, Screeve, and Form -->
-                                <div @click="expandedId = expandedId === item.formObj.id ? null : item.formObj.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition">
-                                    <div class="flex flex-wrap items-center gap-3 text-sm">
-                                        <span class="font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded" x-text="item.formObj.form"></span>
-                                        <span class="text-gray-600 font-medium" x-text="'Masdar: ' + item.formObj.masdar"></span>
-                                        <span class="text-gray-500 capitalize" x-text="'Screeve: ' + item.formObj.screeve"></span>
-                                        <span class="text-xs px-2 py-0.5 rounded uppercase font-medium" :class="item.formObj.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : (item.formObj.status === 'flagged' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800')" x-text="item.formObj.status"></span>
-                                    </div>
-                                    <span class="text-gray-400 text-xs font-medium" x-text="expandedId === item.formObj.id ? '▲ Collapse' : '▼ Expand'"></span>
-                                </div>
-
-                                <!-- Card Expanded Body -->
-                                <template x-if="expandedId === item.formObj.id">
-                                    <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-4">
-                                        <!-- Metadata Grid -->
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-white p-3 rounded border">
-                                            <div><span class="text-gray-400 block">Masdar</span><strong class="text-gray-800" x-text="item.formObj.masdar"></strong></div>
-                                            <div><span class="text-gray-400 block">Screeve</span><strong class="text-gray-800 capitalize" x-text="item.formObj.screeve"></strong></div>
-                                            <div><span class="text-gray-400 block">Subject</span><strong class="text-gray-800" x-text="item.formObj.subject || 'N/A'"></strong></div>
-                                            <div><span class="text-gray-400 block">Object</span><strong class="text-gray-800" x-text="item.formObj.object || 'N/A'"></strong></div>
-                                        </div>
-
-                                        <!-- Step 1: Approve / Flag Form -->
-                                        <template x-if="item.formObj.status === 'assigned'">
-                                            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded space-y-2">
-                                                <p class="text-xs font-bold text-blue-900 uppercase">Step 1: Review Base Form Metadata</p>
-                                                <p class="text-xs text-blue-800">Check if this specific form variant is correct before writing sentences.</p>
-                                                <div class="flex space-x-3 pt-1">
-                                                    <button @click="approveForm(item.formObj)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 font-medium">Approve Form</button>
-                                                    <button @click="activeFormObj = item.formObj; flagComment = ''; flagModalOpen = true" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">Flag Form as Incorrect</button>
-                                                </div>
-                                            </div>
-                                        </template>
-
-                                        <!-- Step 2: Writing Instructions + 3 Example Sentences -->
-                                        <template x-if="item.formObj.status === 'approved'">
-                                            <div class="space-y-3 pt-2">
-                                                <div class="bg-indigo-50 p-3 rounded border border-indigo-100 text-xs text-indigo-900 space-y-1">
-                                                    <p class="font-bold uppercase tracking-wider">Writing Instructions</p>
-                                                    <p>• Must contain target form: <code class="bg-indigo-100 px-1 py-0.5 rounded text-indigo-900 font-bold" x-text="item.formObj.form"></code></p>
-                                                    <p>• Must end with a punctuation mark (. ! ?).</p>
-                                                </div>
-
-                                                <div class="space-y-2">
-                                                    <div>
-                                                        <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 1</label>
-                                                        <input type="text" x-model="exampleInputs[item.formObj.id + '_0']" placeholder="დაწერეთ პირველი მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 2</label>
-                                                        <input type="text" x-model="exampleInputs[item.formObj.id + '_1']" placeholder="დაწერეთ მეორე მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 3</label>
-                                                        <input type="text" x-model="exampleInputs[item.formObj.id + '_2']" placeholder="დაწერეთ მესამე მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
-                                                    </div>
-                                                </div>
-
-                                                <button @click="submitSentences(item)" class="w-full bg-indigo-600 text-white py-2 rounded text-sm hover:bg-indigo-700 font-medium">Submit All 3 Sentences</button>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                        <p x-show="flatWritingTasks.length === 0" class="text-gray-500 italic text-center py-8">No pending writing tasks assigned right now.</p>
-
-                        <!-- Flag Modal -->
-                        <div x-show="flagModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div class="bg-white rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
-                                <h4 class="text-lg font-bold text-red-600">Flag Form as Incorrect</h4>
-                                <p class="text-sm text-gray-600">Please leave a comment explaining why this form is being flagged:</p>
-                                <textarea x-model="flagComment" rows="3" placeholder="Enter reason for flagging..." class="w-full p-2 border rounded border-gray-300 text-sm"></textarea>
-                                <div class="flex justify-end space-x-3">
-                                    <button @click="flagModalOpen = false; flagComment = ''" class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-100">Cancel</button>
-                                    <button @click="submitFlagForm()" class="px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 font-medium">Submit Flag</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- RECORDING TAB -->
-                <template x-if="currentTab === 'record'">
-                    <div class="space-y-4 max-w-3xl mx-auto" x-data="{ expandedId: null, recFlagModalOpen: false, activeRecObj: null, recFlagComment: '' }">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Assigned Recording Tasks</h3>
-                        
-                        <template x-for="recItem in flatRecordingTasks" :key="recItem.id">
-                            <div class="border rounded-lg bg-white shadow-sm overflow-hidden">
-                                <!-- Card Header: Lists Masdar, Screeve, and Form -->
-                                <div @click="expandedId = expandedId === recItem.id ? null : recItem.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition">
-                                    <div class="flex flex-wrap items-center gap-3 text-sm">
-                                        <span class="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded" x-text="recItem.form.form"></span>
-                                        <span class="text-gray-600 font-medium" x-text="'Masdar: ' + recItem.form.masdar"></span>
-                                        <span class="text-gray-500 capitalize" x-text="'Screeve: ' + recItem.form.screeve"></span>
-                                        <span class="text-xs px-2 py-0.5 rounded uppercase font-medium" :class="recItem.sentence.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : (recItem.sentence.status === 'flagged' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')" x-text="'Sentence: ' + recItem.sentence.status"></span>
-                                    </div>
-                                    <span class="text-gray-400 text-xs font-medium" x-text="expandedId === recItem.id ? '▲ Collapse' : '▼ Expand'"></span>
-                                </div>
-
-                                <!-- Card Expanded Body -->
-                                <template x-if="expandedId === recItem.id">
-                                    <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-4">
-                                        <!-- Sentence Display -->
-                                        <div class="bg-white p-3.5 rounded border border-gray-200 space-y-1">
-                                            <span class="text-xs text-gray-400 uppercase font-semibold block">Sentence Written by Peer:</span>
-                                            <p class="text-gray-900 font-medium text-base" x-text="recItem.sentence.text"></p>
-                                        </div>
-
-                                        <!-- Sentence Review / Approve / Flag -->
-                                        <template x-if="recItem.sentence.status === 'submitted'">
-                                            <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded space-y-2">
-                                                <p class="text-xs font-bold text-amber-900 uppercase">Step 1: Review Peer Sentence Quality</p>
-                                                <p class="text-xs text-amber-800">Check if it is clear, natural, and beginner-friendly before recording.</p>
-                                                <div class="flex space-x-3 pt-1">
-                                                    <button @click="approveSentence(recItem)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 font-medium">Approve Sentence</button>
-                                                    <button @click="activeRecObj = recItem; recFlagComment = ''; recFlagModalOpen = true" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">Flag Sentence as Poor Quality</button>
-                                                </div>
-                                            </div>
-                                        </template>
-
-                                        <!-- Recording Workflow Launch on Approval -->
-                                        <template x-if="recItem.sentence.status === 'approved'">
-                                            <div class="pt-2 bg-emerald-50/50 p-4 rounded border border-emerald-100" x-data="audioRecorder(recItem)">
-                                                <p class="text-xs font-bold text-emerald-900 uppercase mb-2">Step 2: Record Audio</p>
-                                                <div class="text-xs text-emerald-800 space-y-1 mb-3">
-                                                    <p>• Record in a quiet room with no background noise.</p>
-                                                    <p>• Speak clearly and steadily at a natural pace.</p>
-                                                </div>
-                                                <div class="flex items-center space-x-3">
-                                                    <template x-if="!recording && !audioUrl">
-                                                        <button @click="startRecording()" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">🔴 Start Recording</button>
-                                                    </template>
-                                                    <template x-if="recording">
-                                                        <button @click="stopRecording()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs animate-pulse font-medium">⏹️ Stop Recording</button>
-                                                    </template>
-                                                    <template x-if="audioUrl">
-                                                        <div class="flex items-center space-x-2 w-full">
-                                                            <audio :src="audioUrl" controls class="h-8 flex-grow"></audio>
-                                                            <button @click="resetRecording()" class="text-xs text-gray-600 hover:underline">Re-record</button>
-                                                            <button @click="uploadAndComplete(recItem)" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs hover:bg-indigo-700 font-medium">Upload & Submit</button>
-                                                        </div>
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                        <p x-show="flatRecordingTasks.length === 0" class="text-gray-500 italic text-center py-8">No pending recording tasks assigned right now.</p>
-
-                        <!-- Recording Flag Modal -->
-                        <div x-show="recFlagModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div class="bg-white rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
-                                <h4 class="text-lg font-bold text-red-600">Flag Sentence as Poor Quality</h4>
-                                <p class="text-sm text-gray-600">Please leave a comment explaining why this sentence is being flagged:</p>
-                                <textarea x-model="recFlagComment" rows="3" placeholder="Enter reason for flagging..." class="w-full p-2 border rounded border-gray-300 text-sm"></textarea>
-                                <div class="flex justify-end space-x-3">
-                                    <button @click="recFlagModalOpen = false; recFlagComment = ''" class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-100">Cancel</button>
-                                    <button @click="submitRecFlag()" class="px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 font-medium">Submit Flag</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- ADMIN: FORMS & ASSIGN TAB -->
-                <template x-if="currentTab === 'admin_assign' && profile?.role === 'admin'">
-                    <div class="space-y-6 max-w-4xl mx-auto">
-                        <div class="bg-white p-6 rounded shadow border border-gray-200 space-y-4">
-                            <h3 class="text-lg font-bold text-purple-700">Assign Unassigned Masdar & Screeve Combinations</h3>
-                            <p class="text-sm text-gray-600">Review unique unassigned verb forms below, assign specific writers and recorders to each combination, and generate tasks.</p>
+                <div x-show="!loading">
+                    <!-- STATS TAB -->
+                    <template x-if="currentTab === 'stats'">
+                        <div class="space-y-6 max-w-3xl mx-auto">
+                            <h3 class="text-xl font-bold text-gray-800">Your Activity Dashboard</h3>
                             
-                            <div class="space-y-4 mt-4">
-                                <template x-for="combo in uniqueCombos" :key="combo.key">
-                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center space-x-2">
-                                                <span class="text-xs uppercase bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold" x-text="combo.screeve"></span>
-                                                <span class="text-xs text-gray-500" x-text="combo.formCount + ' form variant(s)'"></span>
-                                            </div>
-                                            <p class="text-base font-semibold text-gray-900" x-text="'Masdar: ' + combo.masdar"></p>
-                                        </div>
-
-                                        <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                                            <select x-model="combo.writerId" class="p-2 border rounded border-gray-300 text-sm w-full sm:w-44 bg-white">
-                                                <option value="">Select Writer...</option>
-                                                <template x-for="u in contributors" :key="u.id">
-                                                    <option :value="u.id" x-text="u.username"></option>
-                                                </template>
-                                            </select>
-
-                                            <select x-model="combo.recorderId" class="p-2 border rounded border-gray-300 text-sm w-full sm:w-44 bg-white">
-                                                <option value="">Select Recorder...</option>
-                                                <template x-for="u in contributors" :key="u.id">
-                                                    <option :value="u.id" x-text="u.username"></option>
-                                                </template>
-                                            </select>
-
-                                            <button @click="assignCombo(combo)" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700 font-medium whitespace-nowrap w-full sm:w-auto">Assign Combo</button>
-                                        </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                                    <h4 class="font-bold text-indigo-600 border-b pb-2 flex justify-between items-center">
+                                        <span>Writing Tasks</span>
+                                        <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded" x-text="'Total: ' + (stats.wReady + stats.wBlockedForm + stats.wSubmitted + stats.wApproved + stats.wFlagged)"></span>
+                                    </h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between p-2 bg-gray-50 rounded"><span class="text-gray-600">Ready to Write:</span><span class="font-bold text-gray-800" x-text="stats.wReady">0</span></div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Blocked (Form Needs Revision):</span><span class="font-bold text-red-800" x-text="stats.wBlockedForm">0</span></div>
+                                        <div class="flex justify-between p-2 bg-blue-50 rounded"><span class="text-blue-700">Submitted:</span><span class="font-bold text-blue-800" x-text="stats.wSubmitted">0</span></div>
+                                        <div class="flex justify-between p-2 bg-emerald-50 rounded"><span class="text-emerald-700">Approved:</span><span class="font-bold text-emerald-800" x-text="stats.wApproved">0</span></div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Needs Revision:</span><span class="font-bold text-red-800" x-text="stats.wFlagged">0</span></div>
                                     </div>
-                                </template>
-                                <p x-show="uniqueCombos.length === 0" class="text-gray-500 italic text-center py-4">No unassigned forms available right now.</p>
+                                </div>
+
+                                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                                    <h4 class="font-bold text-emerald-600 border-b pb-2 flex justify-between items-center">
+                                        <span>Recording Tasks</span>
+                                        <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded" x-text="'Total: ' + (stats.rReady + stats.rWaitingOnPeer + stats.rBlockedSentence + stats.rSubmitted + stats.rApproved + stats.rFlagged)"></span>
+                                    </h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between p-2 bg-gray-50 rounded"><span class="text-gray-600">Ready to Record:</span><span class="font-bold text-gray-800" x-text="stats.rReady">0</span></div>
+                                        <div class="flex justify-between p-2 bg-amber-50 rounded"><span class="text-amber-700">Waiting on Peer Writer:</span><span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer">0</span></div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Blocked (Sentence Needs Revision):</span><span class="font-bold text-red-800" x-text="stats.rBlockedSentence">0</span></div>
+                                        <div class="flex justify-between p-2 bg-blue-50 rounded"><span class="text-blue-700">Submitted:</span><span class="font-bold text-blue-800" x-text="stats.rSubmitted">0</span></div>
+                                        <div class="flex justify-between p-2 bg-emerald-50 rounded"><span class="text-emerald-700">Approved:</span><span class="font-bold text-emerald-800" x-text="stats.rApproved">0</span></div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Needs Revision:</span><span class="font-bold text-red-800" x-text="stats.rFlagged">0</span></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </template>
+                    </template>
 
-                <!-- ADMIN: REVIEW RECORDINGS TAB -->
-                <template x-if="currentTab === 'admin_review_audio' && profile?.role === 'admin'">
-                    <div class="space-y-6 max-w-4xl mx-auto">
-                        <h3 class="text-lg font-bold text-purple-700">Recordings Pending Admin Review</h3>
-                        <template x-for="rec in adminRecordings" :key="rec.id">
-                            <div class="bg-white p-5 rounded shadow border border-gray-200 space-y-4">
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase">Masdar: <strong x-text="rec.sentences.forms.masdar"></strong> | Screeve: <strong x-text="rec.sentences.forms.screeve"></strong></p>
-                                    <p class="text-md font-semibold text-gray-900 mt-1" x-text="'Sentence: ' + rec.sentences.text"></p>
-                                </div>
-                                <div>
-                                    <audio :src="supabaseStorageUrl(rec.audio_path)" controls class="h-10 w-full"></audio>
-                                </div>
-                                <div class="flex space-x-3 pt-2">
-                                    <button @click="adminApproveRecording(rec.id)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm hover:bg-emerald-700 font-medium">Approve Recording</button>
-                                    <button @click="adminFlagRecording(rec.id)" class="bg-red-600 text-white px-3 py-1.5 rounded text-sm hover:bg-red-700 font-medium">Flag Recording</button>
-                                </div>
-                            </div>
-                        </template>
-                        <p x-show="adminRecordings.length === 0" class="text-gray-500 italic">No recordings pending review.</p>
-                    </div>
-                </template>
+                    <!-- WRITING TAB -->
+                    <template x-if="currentTab === 'write'">
+                        <div class="space-y-4 max-w-3xl mx-auto" x-data="{ expandedId: null, exampleInputs: {}, flagModalOpen: false, activeFormObj: null, flagComment: '' }">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Assigned Writing Tasks</h3>
+                            
+                            <template x-for="item in flatWritingTasks" :key="item.formObj.id">
+                                <div class="border rounded-lg bg-white shadow-sm overflow-hidden">
+                                    <div @click="expandedId = expandedId === item.formObj.id ? null : item.formObj.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition">
+                                        <div class="flex flex-wrap items-center gap-3 text-sm">
+                                            <span class="font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded" x-text="item.formObj.form"></span>
+                                            <span class="text-gray-600 font-medium" x-text="'Masdar: ' + item.formObj.masdar"></span>
+                                            <span class="text-gray-500 capitalize" x-text="'Screeve: ' + item.formObj.screeve"></span>
+                                            <span class="text-xs px-2 py-0.5 rounded uppercase font-medium" :class="item.formObj.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : (item.formObj.status === 'flagged' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800')" x-text="formatStatus(item.formObj.status)"></span>
+                                        </div>
+                                        <span class="text-gray-400 text-xs font-medium" x-text="expandedId === item.formObj.id ? '▲ Collapse' : '▼ Expand'"></span>
+                                    </div>
 
-                <!-- ADMIN: FLAG DASHBOARD TAB -->
-                <template x-if="currentTab === 'admin_flags' && profile?.role === 'admin'">
-                    <div class="space-y-6 max-w-4xl mx-auto">
-                        <h3 class="text-lg font-bold text-red-600">Flagged Items Dashboard</h3>
-                        <p class="text-sm text-gray-600">Review items flagged by contributors for corrections.</p>
-                        <div class="space-y-4">
-                            <template x-for="flag in adminFlags" :key="flag.id">
-                                <div class="bg-white p-4 rounded shadow border border-red-200 space-y-2">
-                                    <span class="text-xs uppercase bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold" x-text="flag.type"></span>
-                                    <p class="text-sm text-gray-800" x-text="flag.detail"></p>
-                                    <p class="text-xs text-red-500 italic" x-text="'Comment: ' + (flag.comment || 'None')"></p>
+                                    <template x-if="expandedId === item.formObj.id">
+                                        <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-4">
+                                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-white p-3 rounded border">
+                                                <div><span class="text-gray-400 block">Masdar</span><strong class="text-gray-800" x-text="item.formObj.masdar"></strong></div>
+                                                <div><span class="text-gray-400 block">Screeve</span><strong class="text-gray-800 capitalize" x-text="item.formObj.screeve"></strong></div>
+                                                <div><span class="text-gray-400 block">Subject</span><strong class="text-gray-800" x-text="item.formObj.subject || 'N/A'"></strong></div>
+                                                <div><span class="text-gray-400 block">Object</span><strong class="text-gray-800" x-text="item.formObj.object || 'N/A'"></strong></div>
+                                            </div>
+
+                                            <template x-if="item.formObj.status === 'assigned'">
+                                                <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded space-y-2">
+                                                    <p class="text-xs font-bold text-blue-900 uppercase">Step 1: Verify Verb Details</p>
+                                                    <p class="text-xs text-blue-800">Check if this verb form is correct before writing sentences.</p>
+                                                    <div class="flex space-x-3 pt-1">
+                                                        <button @click="approveForm(item.formObj)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 font-medium">Verify & Approve</button>
+                                                        <button @click="activeFormObj = item.formObj; flagComment = ''; flagModalOpen = true" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">Request Revision</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+                                            <template x-if="item.formObj.status === 'approved'">
+                                                <div class="space-y-3 pt-2">
+                                                    <div class="bg-indigo-50 p-3 rounded border border-indigo-100 text-xs text-indigo-900 space-y-1">
+                                                        <p class="font-bold uppercase tracking-wider">Writing Guidelines</p>
+                                                        <p>• Must contain target verb form: <code class="bg-indigo-100 px-1 py-0.5 rounded text-indigo-900 font-bold" x-text="item.formObj.form"></code></p>
+                                                        <p>• Must end with a valid punctuation mark (. ! ?).</p>
+                                                    </div>
+
+                                                    <div class="space-y-3">
+                                                        <div>
+                                                            <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 1</label>
+                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_0']" placeholder="დაწერეთ პირველი მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
+                                                            <p class="text-xs text-red-600 mt-1" x-show="sentenceErrors[item.formObj.id + '_0']" x-text="sentenceErrors[item.formObj.id + '_0']"></p>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 2</label>
+                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_1']" placeholder="დაწერეთ მეორე მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
+                                                            <p class="text-xs text-red-600 mt-1" x-show="sentenceErrors[item.formObj.id + '_1']" x-text="sentenceErrors[item.formObj.id + '_1']"></p>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 3</label>
+                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_2']" placeholder="დაწერეთ მესამე მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
+                                                            <p class="text-xs text-red-600 mt-1" x-show="sentenceErrors[item.formObj.id + '_2']" x-text="sentenceErrors[item.formObj.id + '_2']"></p>
+                                                        </div>
+                                                    </div>
+
+                                                    <button @click="submitSentences(item)" class="w-full bg-indigo-600 text-white py-2 rounded text-sm hover:bg-indigo-700 font-medium">Submit All 3 Sentences</button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
                                 </div>
                             </template>
+                            <p x-show="flatWritingTasks.length === 0" class="text-gray-500 italic text-center py-8">No pending writing tasks assigned right now.</p>
+
+                            <!-- Revision Modal -->
+                            <div x-show="flagModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                                <div class="bg-white rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
+                                    <h4 class="text-lg font-bold text-red-600">Request Form Revision</h4>
+                                    <p class="text-sm text-gray-600">Please provide feedback explaining why this form needs attention:</p>
+                                    <textarea x-model="flagComment" rows="3" placeholder="Enter comments..." class="w-full p-2 border rounded border-gray-300 text-sm"></textarea>
+                                    <div class="flex justify-end space-x-3">
+                                        <button @click="flagModalOpen = false; flagComment = ''" class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-100">Cancel</button>
+                                        <button @click="submitFlagForm()" class="px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 font-medium">Submit Request</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </template>
+                    </template>
+
+                    <!-- RECORDING TAB -->
+                    <template x-if="currentTab === 'record'">
+                        <div class="space-y-4 max-w-3xl mx-auto" x-data="{ expandedId: null, recFlagModalOpen: false, activeRecObj: null, recFlagComment: '' }">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Assigned Recording Tasks</h3>
+                            
+                            <template x-for="recItem in flatRecordingTasks" :key="recItem.id">
+                                <div class="border rounded-lg bg-white shadow-sm overflow-hidden">
+                                    <div @click="expandedId = expandedId === recItem.id ? null : recItem.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition">
+                                        <div class="flex flex-wrap items-center gap-3 text-sm">
+                                            <span class="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded" x-text="recItem.form.form"></span>
+                                            <span class="text-gray-600 font-medium" x-text="'Masdar: ' + recItem.form.masdar"></span>
+                                            <span class="text-gray-500 capitalize" x-text="'Screeve: ' + recItem.form.screeve"></span>
+                                            <span class="text-xs px-2 py-0.5 rounded uppercase font-medium" :class="recItem.sentence.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : (recItem.sentence.status === 'flagged' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')" x-text="'Sentence: ' + formatStatus(recItem.sentence.status)"></span>
+                                        </div>
+                                        <span class="text-gray-400 text-xs font-medium" x-text="expandedId === recItem.id ? '▲ Collapse' : '▼ Expand'"></span>
+                                    </div>
+
+                                    <template x-if="expandedId === recItem.id">
+                                        <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-4">
+                                            <div class="bg-white p-3.5 rounded border border-gray-200 space-y-1">
+                                                <span class="text-xs text-gray-400 uppercase font-semibold block">Sentence Written by Contributor:</span>
+                                                <p class="text-gray-900 font-medium text-base" x-text="recItem.sentence.text"></p>
+                                            </div>
+
+                                            <template x-if="recItem.sentence.status === 'submitted'">
+                                                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded space-y-2">
+                                                    <p class="text-xs font-bold text-amber-900 uppercase">Step 1: Review Sentence Quality</p>
+                                                    <p class="text-xs text-amber-800">Check if it is clear, natural souding, and mistake free before recording.</p>
+                                                    <div class="flex space-x-3 pt-1">
+                                                        <button @click="approveSentence(recItem)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 font-medium">Approve Sentence</button>
+                                                        <button @click="activeRecObj = recItem; recFlagComment = ''; recFlagModalOpen = true" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">Request Revision</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+                                            <template x-if="recItem.sentence.status === 'approved'">
+                                                <div class="pt-2 bg-emerald-50/50 p-4 rounded border border-emerald-100" x-data="audioRecorder(recItem)">
+                                                    <p class="text-xs font-bold text-emerald-900 uppercase mb-2">Step 2: Record Audio</p>
+                                                    <div class="text-xs text-emerald-800 space-y-1 mb-3">
+                                                        <p>• Record in a quiet room with no background noise.</p>
+                                                        <p>• Use a good microphone.</p>
+                                                        <p>• Speak clearly and steadily at a natural pace.</p>
+                                                    </div>
+                                                    <div class="flex items-center space-x-3">
+                                                        <template x-if="!recording && !audioUrl">
+                                                            <button @click="startRecording()" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">🔴 Start Recording</button>
+                                                        </template>
+                                                        <template x-if="recording">
+                                                            <div class="flex items-center space-x-3">
+                                                                <button @click="stopRecording()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs animate-pulse font-medium">⏹️ Stop Recording</button>
+                                                                <span class="text-xs font-mono font-bold text-red-600" x-text="formatTime(recordingTime)"></span>
+                                                            </div>
+                                                        </template>
+                                                        <template x-if="audioUrl">
+                                                            <div class="flex items-center space-x-2 w-full">
+                                                                <audio :src="audioUrl" controls class="h-8 flex-grow"></audio>
+                                                                <button @click="resetRecording()" class="text-xs text-gray-600 hover:underline">Re-record</button>
+                                                                <button @click="uploadAndComplete(recItem)" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs hover:bg-indigo-700 font-medium">Upload & Submit</button>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <p x-show="flatRecordingTasks.length === 0" class="text-gray-500 italic text-center py-8">No pending recording tasks assigned right now.</p>
+
+                            <!-- Recording Revision Modal -->
+                            <div x-show="recFlagModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                                <div class="bg-white rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
+                                    <h4 class="text-lg font-bold text-red-600">Request Sentence Revision</h4>
+                                    <p class="text-sm text-gray-600">Please provide feedback explaining why this sentence needs revision:</p>
+                                    <textarea x-model="recFlagComment" rows="3" placeholder="Enter comments..." class="w-full p-2 border rounded border-gray-300 text-sm"></textarea>
+                                    <div class="flex justify-end space-x-3">
+                                        <button @click="recFlagModalOpen = false; recFlagComment = ''" class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-100">Cancel</button>
+                                        <button @click="submitRecFlag()" class="px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 font-medium">Submit Request</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- ADMIN: FORMS & ASSIGN TAB -->
+                    <template x-if="currentTab === 'admin_assign' && profile?.role === 'admin'">
+                        <div class="space-y-6 max-w-4xl mx-auto">
+                            <div class="bg-white p-6 rounded shadow border border-gray-200 space-y-4">
+                                <h3 class="text-lg font-bold text-purple-700">Form Assignments</h3>
+                                <p class="text-sm text-gray-600">Review pending verb groups, assign contributors, and generate tasks.</p>
+                                
+                                <div class="space-y-4 mt-4">
+                                    <template x-for="combo in uniqueCombos" :key="combo.key">
+                                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                                            <div class="space-y-1">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-xs uppercase bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold" x-text="combo.screeve"></span>
+                                                    <span class="text-xs text-gray-500" x-text="combo.formCount + ' form variant(s)'"></span>
+                                                </div>
+                                                <p class="text-base font-semibold text-gray-900" x-text="'Masdar: ' + combo.masdar"></p>
+                                            </div>
+
+                                            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                                                <select x-model="combo.writerId" class="p-2 border rounded border-gray-300 text-sm w-full sm:w-44 bg-white">
+                                                    <option value="">Select Writer...</option>
+                                                    <template x-for="u in contributors" :key="u.id">
+                                                        <option :value="u.id" x-text="u.username"></option>
+                                                    </template>
+                                                </select>
+
+                                                <select x-model="combo.recorderId" class="p-2 border rounded border-gray-300 text-sm w-full sm:w-44 bg-white">
+                                                    <option value="">Select Recorder...</option>
+                                                    <template x-for="u in contributors" :key="u.id">
+                                                        <option :value="u.id" x-text="u.username"></option>
+                                                    </template>
+                                                </select>
+
+                                                <button @click="assignCombo(combo)" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700 font-medium whitespace-nowrap w-full sm:w-auto">Assign Group</button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <p x-show="uniqueCombos.length === 0" class="text-gray-500 italic text-center py-4">No unassigned forms available right now.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- ADMIN: REVIEW RECORDINGS TAB -->
+                    <template x-if="currentTab === 'admin_review_audio' && profile?.role === 'admin'">
+                        <div class="space-y-6 max-w-4xl mx-auto">
+                            <h3 class="text-lg font-bold text-purple-700">Recordings Pending Admin Review</h3>
+                            <template x-for="rec in adminRecordings" :key="rec.id">
+                                <div class="bg-white p-5 rounded shadow border border-gray-200 space-y-4">
+                                    <div>
+                                        <p class="text-xs text-gray-500 uppercase">Masdar: <strong x-text="rec.sentences.forms.masdar"></strong> | Screeve: <strong x-text="rec.sentences.forms.screeve"></strong></p>
+                                        <p class="text-md font-semibold text-gray-900 mt-1" x-text="'Sentence: ' + rec.sentences.text"></p>
+                                    </div>
+                                    <div>
+                                        <audio :src="supabaseStorageUrl(rec.audio_path)" controls class="h-10 w-full"></audio>
+                                    </div>
+                                    <div class="flex space-x-3 pt-2">
+                                        <button @click="adminApproveRecording(rec.id)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-sm hover:bg-emerald-700 font-medium">Approve Recording</button>
+                                        <button @click="adminFlagRecording(rec.id)" class="bg-red-600 text-white px-3 py-1.5 rounded text-sm hover:bg-red-700 font-medium">Request Revision</button>
+                                    </div>
+                                </div>
+                            </template>
+                            <p x-show="adminRecordings.length === 0" class="text-gray-500 italic">No recordings pending review.</p>
+                        </div>
+                    </template>
+
+                    <!-- ADMIN: FLAG DASHBOARD TAB -->
+                    <template x-if="currentTab === 'admin_flags' && profile?.role === 'admin'">
+                        <div class="space-y-6 max-w-4xl mx-auto">
+                            <h3 class="text-lg font-bold text-red-600">Items Needing Revision</h3>
+                            <p class="text-sm text-gray-600">Review items flagged by contributors for corrections.</p>
+                            <div class="space-y-4">
+                                <template x-for="flag in adminFlags" :key="flag.id">
+                                    <div class="bg-white p-4 rounded shadow border border-red-200 space-y-2">
+                                        <span class="text-xs uppercase bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold" x-text="flag.type"></span>
+                                        <p class="text-sm text-gray-800" x-text="flag.detail"></p>
+                                        <p class="text-xs text-red-500 italic" x-text="'Feedback: ' + (flag.comment || 'None')"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
 
             </div>
             </template>
@@ -415,461 +391,9 @@
         </main>
     </div>
 
-    <script>
-        const SUPABASE_URL = 'https://ygxwvmhdpqbumstoqayg.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_F05L1QI1ClkusTzEaBzoyQ_3YcYAaOn';
-        
-        window.supabaseClient = window.supabaseClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const db = window.supabaseClient;
-
-        const pronounOrder = ['მე', 'ჩვენ', 'შენ', 'თქვენ', 'ის', 'მას', 'მან', 'ისინი', 'მათ'];
-        const screeveOrder = ['present', 'imperfect', 'future', 'conditional', 'aorist', 'optative', 'perfective'];
-
-        function getPronounRank(val) {
-            if (!val) return 99;
-            const index = pronounOrder.indexOf(val.trim());
-            return index !== -1 ? index : 50;
-        }
-
-        function getScreeveRank(screeve) {
-            if (!screeve) return 99;
-            const index = screeveOrder.indexOf(screeve.toLowerCase().trim());
-            return index !== -1 ? index : 50;
-        }
-
-        function app() {
-            return {
-                user: null,
-                profile: null,
-                currentTab: 'stats',
-                mobileMenuOpen: false,
-                email: '',
-                password: '',
-                errorMessage: '',
-                flatWritingTasks: [],
-                flatRecordingTasks: [],
-                contributors: [],
-                uniqueCombos: [],
-                adminRecordings: [],
-                adminFlags: [],
-                stats: { wAssigned: 0, wSubmitted: 0, wApproved: 0, wFlagged: 0, rAssigned: 0, rSubmitted: 0, rApproved: 0, rFlagged: 0 },
-
-                async init() {
-                    db.auth.onAuthStateChange(async (event, session) => {
-                        const newUser = session?.user || null;
-                        if (newUser?.id !== this.user?.id) {
-                            this.user = newUser;
-                            if (this.user) {
-                                await this.fetchProfile();
-                                await this.fetchStats();
-                                await this.fetchTasks();
-                            } else {
-                                this.profile = null;
-                                this.flatWritingTasks = [];
-                                this.flatRecordingTasks = [];
-                            }
-                        }
-                    });
-                },
-
-                async fetchProfile() {
-                    const { data } = await db.from('users').select('*').eq('id', this.user.id).single();
-                    this.profile = data;
-                },
-
-                async login() {
-                    this.errorMessage = '';
-                    const { error } = await db.auth.signInWithPassword({ email: this.email, password: this.password });
-                    if (error) this.errorMessage = error.message;
-                },
-
-                async logout() {
-                    await db.auth.signOut();
-                    this.user = null;
-                    this.profile = null;
-                },
-
-                async fetchStats() {
-                    // 1. Fetch Writing stats
-                    const { data: wData } = await db
-                        .from('sentences')
-                        .select(`status, forms (status)`)
-                        .eq('creator', this.user.id);
-
-                    this.stats.wReady = 0;
-                    this.stats.wBlockedForm = 0;
-                    this.stats.wSubmitted = 0;
-                    this.stats.wApproved = 0;
-                    this.stats.wFlagged = 0;
-
-                    (wData || []).forEach(row => {
-                        const formStatus = row.forms?.status;
-                        if (row.status === 'assigned') {
-                            if (formStatus === 'flagged') {
-                                this.stats.wBlockedForm++;
-                            } else {
-                                this.stats.wReady++;
-                            }
-                        }
-                        if (row.status === 'submitted') this.stats.wSubmitted++;
-                        if (row.status === 'approved') this.stats.wApproved++;
-                        if (row.status === 'flagged') this.stats.wFlagged++;
-                    });
-
-                    // 2. Fetch Recording stats (Handling unwritten vs. flagged sentences)
-                    const { data: rData } = await db
-                        .from('recordings')
-                        .select(`status, sentences (status)`)
-                        .eq('creator', this.user.id);
-
-                    this.stats.rReady = 0;
-                    this.stats.rWaitingOnPeer = 0;
-                    this.stats.rBlockedSentence = 0;
-                    this.stats.rSubmitted = 0;
-                    this.stats.rApproved = 0;
-                    this.stats.rFlagged = 0;
-
-                    (rData || []).forEach(row => {
-                        const sentenceStatus = row.sentences?.status;
-                        
-                        if (row.status === 'assigned') {
-                            if (!sentenceStatus || sentenceStatus === 'assigned') {
-                                this.stats.rWaitingOnPeer++; // Peer hasn't written yet
-                            } else if (sentenceStatus === 'flagged') {
-                                this.stats.rBlockedSentence++; // Peer sentence was flagged
-                            } else if (sentenceStatus === 'submitted' || sentenceStatus === 'approved') {
-                                this.stats.rReady++; // Ready to review/record
-                            }
-                        }
-                        if (row.status === 'submitted') this.stats.rSubmitted++;
-                        if (row.status === 'approved') this.stats.rApproved++;
-                        if (row.status === 'flagged') this.stats.rFlagged++;
-                    });
-                },
-
-                async fetchTasks() {
-                    // 1. Fetch Writing Tasks
-                    const { data: wData } = await db
-                        .from('sentences')
-                        .select(`id, status, form_id, forms (id, masdar, screeve, subject, object, form, status, reviewer, comment)`)
-                        .eq('creator', this.user.id)
-                        .eq('status', 'assigned');
-                    
-                    const formMap = {};
-                    (wData || []).forEach(row => {
-                        const f = row.forms;
-                        if (!f) return;
-                        if (!formMap[f.id]) {
-                            formMap[f.id] = { formObj: f, sentences: [] };
-                        }
-                        formMap[f.id].sentences.push({ id: row.id, form_id: row.form_id });
-                    });
-
-                    this.flatWritingTasks = Object.values(formMap).sort((a, b) => {
-                        const mComp = a.formObj.masdar.localeCompare(b.formObj.masdar);
-                        if (mComp !== 0) return mComp;
-                        const sComp = getScreeveRank(a.formObj.screeve) - getScreeveRank(b.formObj.screeve);
-                        if (sComp !== 0) return sComp;
-                        const subjComp = getPronounRank(a.formObj.subject) - getPronounRank(b.formObj.subject);
-                        if (subjComp !== 0) return subjComp;
-                        return getPronounRank(a.formObj.object) - getPronounRank(b.formObj.object);
-                    });
-
-                    // 2. Fetch Recording Tasks (Only where recording is assigned AND the sentence is submitted by a writer)
-                    const { data: rData } = await db
-                        .from('recordings')
-                        .select(`id, status, sentence_id, sentences (id, text, status, reviewer, comment, forms (id, masdar, screeve, subject, object, form))`)
-                        .eq('creator', this.user.id)
-                        .eq('status', 'assigned');
-
-                    const recList = [];
-                    (rData || []).forEach(row => {
-                        const s = row.sentences;
-                        // Skip if sentence hasn't been written yet ('assigned') or has been flagged ('flagged')
-                        if (!s || !s.forms || s.status === 'assigned' || s.status === 'flagged') return; 
-                        
-                        recList.push({
-                            id: row.id,
-                            status: row.status,
-                            sentence: s,
-                            form: s.forms
-                        });
-                    });
-
-                    this.flatRecordingTasks = recList.sort((a, b) => {
-                        const mComp = a.form.masdar.localeCompare(b.form.masdar);
-                        if (mComp !== 0) return mComp;
-                        const sComp = getScreeveRank(a.form.screeve) - getScreeveRank(b.form.screeve);
-                        if (sComp !== 0) return sComp;
-                        const subjComp = getPronounRank(a.form.subject) - getPronounRank(b.form.subject);
-                        if (subjComp !== 0) return subjComp;
-                        return getPronounRank(a.form.object) - getPronounRank(b.form.object);
-                    });
-                },
-
-                // --- WRITER ACTIONS ---
-                async approveForm(formObj) {
-                    const { error } = await db.from('forms').update({ 
-                        status: 'approved', 
-                        reviewer: this.user.id 
-                    }).eq('id', formObj.id);
-
-                    if (error) { alert(error.message); return; }
-                    formObj.status = 'approved';
-                    alert('Form approved successfully! You can now write your example sentences.');
-                },
-
-                async submitFlagForm() {
-                    if (!this.flagComment.trim()) return alert('Please enter a comment for flagging.');
-                    const formObj = this.activeFormObj;
-                    
-                    const { error } = await db.from('forms').update({ 
-                        status: 'flagged', 
-                        reviewer: this.user.id, 
-                        comment: this.flagComment 
-                    }).eq('id', formObj.id);
-
-                    if (error) { alert(error.message); return; }
-                    
-                    formObj.status = 'flagged';
-                    this.flagModalOpen = false;
-                    this.activeFormObj = null;
-                    this.flagComment = '';
-                    alert('Form flagged successfully.');
-                },
-
-                async submitSentences(item) {
-                    const formId = item.formObj.id;
-                    const ex1 = (this.exampleInputs[formId + '_0'] || '').trim();
-                    const ex2 = (this.exampleInputs[formId + '_1'] || '').trim();
-                    const ex3 = (this.exampleInputs[formId + '_2'] || '').trim();
-
-                    if (!ex1 || !ex2 || !ex3) {
-                        return alert('Please fill in all 3 example sentences.');
-                    }
-
-                    const targetForm = item.formObj.form;
-                    const punctuationRegex = /[.!?]$/;
-                    const inputs = [ex1, ex2, ex3];
-
-                    for (let i = 0; i < inputs.length; i++) {
-                        const s = inputs[i];
-                        if (!s.includes(targetForm)) {
-                            return alert(`Example ${i + 1} does not contain the target form: "${targetForm}"`);
-                        }
-                        if (!punctuationRegex.test(s)) {
-                            return alert(`Example ${i + 1} must end with a punctuation mark (. ! ?).`);
-                        }
-                    }
-
-                    if (!item.sentences || item.sentences.length < 3) {
-                        return alert('Error: Expected 3 sentence task rows for this form.');
-                    }
-
-                    for (let i = 0; i < 3; i++) {
-                        const sentenceRow = item.sentences[i];
-                        const { error } = await db.from('sentences').update({
-                            text: inputs[i],
-                            status: 'submitted'
-                        }).eq('id', sentenceRow.id);
-
-                        if (error) {
-                            alert(`Error saving sentence ${i + 1}: ${error.message}`);
-                            return;
-                        }
-                    }
-
-                    alert('All 3 example sentences submitted successfully!');
-                    await this.fetchTasks();
-                    await this.fetchStats();
-                },
-
-                // --- RECORDER ACTIONS ---
-                async approveSentence(recItem) {
-                    const { error } = await db.from('sentences').update({ status: 'approved', reviewer: this.user.id }).eq('id', recItem.sentence.id);
-                    if (error) { alert(error.message); return; }
-                    recItem.sentence.status = 'approved';
-                },
-
-                async submitRecFlag() {
-                    if (!this.recFlagComment.trim()) return alert('Please enter a comment for flagging.');
-                    const recItem = this.activeRecObj;
-
-                    const { error } = await db.from('sentences').update({ 
-                        status: 'flagged', 
-                        reviewer: this.user.id, 
-                        comment: this.recFlagComment 
-                    }).eq('id', recItem.sentence.id);
-
-                    if (error) { alert(error.message); return; }
-
-                    recItem.sentence.status = 'flagged';
-                    this.recFlagModalOpen = false;
-                    this.activeRecObj = null;
-                    this.recFlagComment = '';
-                    alert('Sentence flagged as poor quality.');
-                },
-
-                // --- ADMIN ACTIONS ---
-                async fetchAdminData() {
-                    const { data: uData } = await db.from('users').select('*');
-                    this.contributors = uData || [];
-
-                    const { data: forms, error: fError } = await db.from('forms').select('id, masdar, screeve').eq('status', 'unassigned');
-                    if (fError) { alert(fError.message); return; }
-
-                    const comboMap = {};
-                    (forms || []).forEach(f => {
-                        const key = `${f.masdar}___${f.screeve}`;
-                        if (!comboMap[key]) {
-                            comboMap[key] = {
-                                key: key,
-                                masdar: f.masdar,
-                                screeve: f.screeve,
-                                formIds: [],
-                                formCount: 0,
-                                writerId: '',
-                                recorderId: ''
-                            };
-                        }
-                        comboMap[key].formIds.push(f.id);
-                        comboMap[key].formCount++;
-                    });
-
-                    this.uniqueCombos = Object.values(comboMap);
-                },
-
-                async assignCombo(combo) {
-                    if (!combo.writerId || !combo.recorderId) {
-                        return alert('Please select both a writer and a recorder for this combination.');
-                    }
-
-                    for (const formId of combo.formIds) {
-                        await db.from('forms').update({ status: 'assigned' }).eq('id', formId);
-
-                        for (let i = 0; i < 3; i++) {
-                            const { data: sent } = await db.from('sentences').insert({
-                                form_id: formId,
-                                creator: combo.writerId,
-                                status: 'assigned'
-                            }).select('id').single();
-
-                            if (sent) {
-                                await db.from('recordings').insert({
-                                    sentence_id: sent.id,
-                                    creator: combo.recorderId,
-                                    status: 'assigned'
-                                });
-                            }
-                        }
-                    }
-
-                    alert(`Successfully assigned tasks for ${combo.masdar} (${combo.screeve})!`);
-                    await this.fetchAdminData();
-                },
-
-                async fetchAdminRecordings() {
-                    const { data } = await db
-                        .from('recordings')
-                        .select(`id, audio_path, sentences (id, text, forms (masdar, screeve))`)
-                        .eq('status', 'submitted');
-                    this.adminRecordings = data || [];
-                },
-
-                supabaseStorageUrl(path) {
-                    const { data } = db.storage.from('audio-bucket').getPublicUrl(path);
-                    return data.publicUrl;
-                },
-
-                async adminApproveRecording(id) {
-                    await db.from('recordings').update({ status: 'approved', reviewer: this.user.id }).eq('id', id);
-                    this.fetchAdminRecordings();
-                },
-
-                async adminFlagRecording(id) {
-                    await db.from('recordings').update({ status: 'flagged', reviewer: this.user.id }).eq('id', id);
-                    this.fetchAdminRecordings();
-                },
-
-                async fetchAdminFlags() {
-                    const { data: fForms } = await db.from('forms').select('id, masdar, screeve, comment').eq('status', 'flagged');
-                    const { data: fSents } = await db.from('sentences').select('id, text, comment').eq('status', 'flagged');
-                    const { data: fRecs } = await db.from('recordings').select('id, audio_path, comment').eq('status', 'flagged');
-
-                    this.adminFlags = [
-                        ...(fForms || []).map(x => ({ id: x.id, type: 'Form Flag', detail: `${x.masdar} (${x.screeve})`, comment: x.comment })),
-                        ...(fSents || []).map(x => ({ id: x.id, type: 'Sentence Flag', detail: x.text, comment: x.comment })),
-                        ...(fRecs || []).map(x => ({ id: x.id, type: 'Recording Flag', detail: x.audio_path, comment: x.comment }))
-                    ];
-                }
-            }
-        }
-
-        function audioRecorder(recItem) {
-            return {
-                recording: false,
-                mediaRecorder: null,
-                audioChunks: [],
-                audioBlob: null,
-                audioUrl: null,
-
-                async startRecording() {
-                    this.audioChunks = [];
-                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                        alert('Microphone access is not supported in this browser or requires a secure context (HTTPS / localhost).');
-                        return;
-                    }
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        this.mediaRecorder = new MediaRecorder(stream);
-                        this.mediaRecorder.ondataavailable = e => this.audioChunks.push(e.data);
-                        this.mediaRecorder.onstop = () => {
-                            this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-                            this.audioUrl = URL.createObjectURL(this.audioBlob);
-                            
-                            // Auto-play the recording once the audio element renders in the DOM
-                            this.$nextTick(() => {
-                                const audioEl = this.$el.querySelector('audio');
-                                if (audioEl) {
-                                    audioEl.play().catch(err => console.log('Auto-play prevented by browser policy:', err));
-                                }
-                            });
-                        };
-                        this.mediaRecorder.start();
-                        this.recording = true;
-                    } catch (err) {
-                        alert('Could not access microphone. Please check permissions. Error: ' + err.message);
-                    }
-                },
-
-                stopRecording() {
-                    this.mediaRecorder.stop();
-                    this.recording = false;
-                },
-
-                resetRecording() {
-                    this.audioBlob = null;
-                    this.audioUrl = null;
-                },
-
-                async uploadAndComplete(recItem) {
-                    if (!this.audioBlob) return alert('No audio recorded.');
-                    const fileName = `${recItem.id}-${Date.now()}.webm`;
-                    const { data, error } = await window.supabaseClient.storage.from('audio-bucket').upload(fileName, this.audioBlob);
-                    if (error) { alert(error.message); return; }
-
-                    const { error: updateErr } = await window.supabaseClient.from('recordings').update({
-                        audio_path: data.path,
-                        status: 'submitted'
-                    }).eq('id', recItem.id);
-
-                    if (updateErr) { alert(updateErr.message); return; }
-
-                    alert('Audio uploaded and submitted successfully!');
-                    window.location.reload();
-                }
-            }
-        }
-    </script>
+    <!-- Script Modules -->
+    <script src="js/utils.js"></script>
+    <script src="js/recorder.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
