@@ -115,15 +115,19 @@
                                             <span class="font-bold bg-indigo-800 px-2 py-0.5 rounded-full text-xs" x-text="stats.wReady">0</span>
                                         </button>
                                         <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
-                                            <span class="text-amber-700">Waiting on Form Revision:</span>
+                                            <span class="text-amber-700">Waiting:</span>
                                             <span class="font-bold text-amber-800" x-text="stats.wBlockedForm">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-amber-50/60 rounded ml-8">
+                                            <span class="text-amber-600">Waiting on Form Revision:</span>
+                                            <span class="font-bold text-amber-700" x-text="stats.wBlockedForm">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
                                             <span class="text-blue-700 font-medium">Submitted:</span>
                                             <span class="font-bold text-blue-800" x-text="stats.wSubmitted + stats.wApproved + stats.wFlagged">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50/60 rounded ml-8">
-                                            <span class="text-blue-600">Awaiting Approval:</span>
+                                            <span class="text-blue-600">Waiting for Review:</span>
                                             <span class="font-bold text-blue-700" x-text="stats.wSubmitted">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-emerald-50 rounded ml-8">
@@ -154,19 +158,23 @@
                                             <span class="font-bold bg-emerald-800 px-2 py-0.5 rounded-full text-xs" x-text="stats.rReady">0</span>
                                         </button>
                                         <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
-                                            <span class="text-amber-700">Waiting on Peer Writer:</span>
-                                            <span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer">0</span>
+                                            <span class="text-amber-700">Waiting:</span>
+                                            <span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer + stats.rBlockedSentence">0</span>
                                         </div>
-                                        <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
-                                            <span class="text-amber-700">Waiting on Sentence Revision:</span>
-                                            <span class="font-bold text-amber-800" x-text="stats.rBlockedSentence">0</span>
+                                        <div class="flex justify-between p-2 bg-amber-50/60 rounded ml-8">
+                                            <span class="text-amber-600">Waiting on Peer Writer:</span>
+                                            <span class="font-bold text-amber-700" x-text="stats.rWaitingOnPeer">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-amber-50/60 rounded ml-8">
+                                            <span class="text-amber-600">Waiting on Sentence Revision:</span>
+                                            <span class="font-bold text-amber-700" x-text="stats.rBlockedSentence">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
                                             <span class="text-blue-700 font-medium">Submitted:</span>
                                             <span class="font-bold text-blue-800" x-text="stats.rSubmitted + stats.rApproved + stats.rFlagged">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50/60 rounded ml-8">
-                                            <span class="text-blue-600">Awaiting Approval:</span>
+                                            <span class="text-blue-600">Waiting for Review:</span>
                                             <span class="font-bold text-blue-700" x-text="stats.rSubmitted">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-emerald-50 rounded ml-8">
