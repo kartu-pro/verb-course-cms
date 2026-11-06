@@ -8,6 +8,7 @@ function app() {
         password: '',
         errorMessage: '',
         loading: false,
+        submitting: false,
         flatWritingTasks: [],
         flatRecordingTasks: [],
         contributors: [],
