@@ -15,6 +15,7 @@ function app() {
         uniqueCombos: [],
         adminRecordings: [],
         adminFlags: [],
+        selectedStatsUserId: '',
         stats: { 
             wAssignedToMe: 0, wReady: 0, wWaiting: 0, wBlockedForm: 0, wSubmittedTotal: 0, wSubmitted: 0, wApproved: 0, wFlagged: 0, 
             rAssignedToMe: 0, rReady: 0, rWaiting: 0, rWaitingOnPeer: 0, rBlockedSentence: 0, rSubmittedTotal: 0, rSubmitted: 0, rApproved: 0, rFlagged: 0 
@@ -85,11 +86,17 @@ function app() {
             this.showToast('Signed out successfully');
         },
 
-        async fetchStats() {
+        async fetchContributors() {
+            const { data: uData } = await db.from('users').select('*');
+            this.contributors = uData || [];
+        },
+
+        async fetchStats(targetUserId = null) {
+            const userId = targetUserId || this.user.id;
             const { data: wData } = await db
                 .from('sentences')
                 .select(`status, forms (status)`)
-                .eq('creator', this.user.id);
+                .eq('creator', userId);
 
             this.stats.wAssignedToMe = 0;
             this.stats.wReady = 0;
@@ -128,7 +135,7 @@ function app() {
             const { data: rData } = await db
                 .from('recordings')
                 .select(`status, sentences (status)`)
-                .eq('creator', this.user.id);
+                .eq('creator', userId);
 
             this.stats.rAssignedToMe = 0;
             this.stats.rReady = 0;
