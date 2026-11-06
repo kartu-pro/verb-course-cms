@@ -99,31 +99,70 @@
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
-                                    <h4 class="font-bold text-indigo-600 border-b pb-2 flex justify-between items-center">
-                                        <span>Writing Tasks</span>
-                                        <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded" x-text="'Total: ' + (stats.wReady + stats.wBlockedForm + stats.wSubmitted + stats.wApproved + stats.wFlagged)"></span>
+                                    <h4 class="font-bold text-indigo-600 border-b pb-2">
+                                        Writing Tasks
                                     </h4>
                                     <div class="space-y-2 text-sm">
-                                        <div class="flex justify-between p-2 bg-gray-50 rounded"><span class="text-gray-600">Ready to Write:</span><span class="font-bold text-gray-800" x-text="stats.wReady">0</span></div>
-                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Blocked (Form Needs Revision):</span><span class="font-bold text-red-800" x-text="stats.wBlockedForm">0</span></div>
-                                        <div class="flex justify-between p-2 bg-blue-50 rounded"><span class="text-blue-700">Submitted:</span><span class="font-bold text-blue-800" x-text="stats.wSubmitted">0</span></div>
-                                        <div class="flex justify-between p-2 bg-emerald-50 rounded"><span class="text-emerald-700">Approved:</span><span class="font-bold text-emerald-800" x-text="stats.wApproved">0</span></div>
-                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Needs Revision:</span><span class="font-bold text-red-800" x-text="stats.wFlagged">0</span></div>
+                                        <div class="flex justify-between p-2 bg-indigo-50 rounded font-semibold text-indigo-900">
+                                            <span>Assigned to me</span>
+                                            <span x-text="stats.wReady + stats.wBlockedForm">0</span>
+                                        </div>
+                                        <div @click="currentTab = 'write'; fetchTasks()" class="flex justify-between p-2 bg-gray-50 rounded ml-4 cursor-pointer hover:bg-gray-100 transition">
+                                            <span class="text-gray-700 font-medium">Ready to Write:</span>
+                                            <span class="font-bold text-gray-800" x-text="stats.wReady">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded ml-4">
+                                            <span class="text-red-700">Waiting on Form Revision:</span>
+                                            <span class="font-bold text-red-800" x-text="stats.wBlockedForm">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
+                                            <span class="text-blue-700 font-medium">Submitted:</span>
+                                            <span class="font-bold text-blue-800" x-text="stats.wSubmitted">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-emerald-50 rounded ml-8">
+                                            <span class="text-emerald-700">Approved:</span>
+                                            <span class="font-bold text-emerald-800" x-text="stats.wApproved">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded ml-8">
+                                            <span class="text-red-700">Needs Revision:</span>
+                                            <span class="font-bold text-red-800" x-text="stats.wFlagged">0</span>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
-                                    <h4 class="font-bold text-emerald-600 border-b pb-2 flex justify-between items-center">
-                                        <span>Recording Tasks</span>
-                                        <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded" x-text="'Total: ' + (stats.rReady + stats.rWaitingOnPeer + stats.rBlockedSentence + stats.rSubmitted + stats.rApproved + stats.rFlagged)"></span>
+                                    <h4 class="font-bold text-emerald-600 border-b pb-2">
+                                        Recording Tasks
                                     </h4>
                                     <div class="space-y-2 text-sm">
-                                        <div class="flex justify-between p-2 bg-gray-50 rounded"><span class="text-gray-600">Ready to Record:</span><span class="font-bold text-gray-800" x-text="stats.rReady">0</span></div>
-                                        <div class="flex justify-between p-2 bg-amber-50 rounded"><span class="text-amber-700">Waiting on Peer Writer:</span><span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer">0</span></div>
-                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Blocked (Sentence Needs Revision):</span><span class="font-bold text-red-800" x-text="stats.rBlockedSentence">0</span></div>
-                                        <div class="flex justify-between p-2 bg-blue-50 rounded"><span class="text-blue-700">Submitted:</span><span class="font-bold text-blue-800" x-text="stats.rSubmitted">0</span></div>
-                                        <div class="flex justify-between p-2 bg-emerald-50 rounded"><span class="text-emerald-700">Approved:</span><span class="font-bold text-emerald-800" x-text="stats.rApproved">0</span></div>
-                                        <div class="flex justify-between p-2 bg-red-50 rounded"><span class="text-red-700">Needs Revision:</span><span class="font-bold text-red-800" x-text="stats.rFlagged">0</span></div>
+                                        <div class="flex justify-between p-2 bg-emerald-50 rounded font-semibold text-emerald-900">
+                                            <span>Assigned to me</span>
+                                            <span x-text="stats.rReady + stats.rWaitingOnPeer + stats.rBlockedSentence">0</span>
+                                        </div>
+                                        <div @click="currentTab = 'record'; fetchTasks()" class="flex justify-between p-2 bg-gray-50 rounded ml-4 cursor-pointer hover:bg-gray-100 transition">
+                                            <span class="text-gray-700 font-medium">Ready to Record:</span>
+                                            <span class="font-bold text-gray-800" x-text="stats.rReady">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
+                                            <span class="text-amber-700">Waiting on Peer Writer:</span>
+                                            <span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded ml-4">
+                                            <span class="text-red-700">Waiting on Sentence Revision:</span>
+                                            <span class="font-bold text-red-800" x-text="stats.rBlockedSentence">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
+                                            <span class="text-blue-700 font-medium">Submitted:</span>
+                                            <span class="font-bold text-blue-800" x-text="stats.rSubmitted">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-emerald-50 rounded ml-8">
+                                            <span class="text-emerald-700">Approved:</span>
+                                            <span class="font-bold text-emerald-800" x-text="stats.rApproved">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-red-50 rounded ml-8">
+                                            <span class="text-red-700">Needs Revision:</span>
+                                            <span class="font-bold text-red-800" x-text="stats.rFlagged">0</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
