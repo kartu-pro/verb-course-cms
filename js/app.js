@@ -15,7 +15,10 @@ function app() {
         uniqueCombos: [],
         adminRecordings: [],
         adminFlags: [],
-        stats: { wReady: 0, wBlockedForm: 0, wSubmitted: 0, wApproved: 0, wFlagged: 0, rReady: 0, rWaitingOnPeer: 0, rBlockedSentence: 0, rSubmitted: 0, rApproved: 0, rFlagged: 0 },
+        stats: { 
+            wAssignedToMe: 0, wReady: 0, wWaiting: 0, wBlockedForm: 0, wSubmittedTotal: 0, wSubmitted: 0, wApproved: 0, wFlagged: 0, 
+            rAssignedToMe: 0, rReady: 0, rWaiting: 0, rWaitingOnPeer: 0, rBlockedSentence: 0, rSubmittedTotal: 0, rSubmitted: 0, rApproved: 0, rFlagged: 0 
+        },
         sentenceErrors: {},
         toast: { show: false, message: '', type: 'success' },
 
@@ -88,13 +91,17 @@ function app() {
                 .select(`status, forms (status)`)
                 .eq('creator', this.user.id);
 
+            this.stats.wAssignedToMe = 0;
             this.stats.wReady = 0;
+            this.stats.wWaiting = 0;
             this.stats.wBlockedForm = 0;
+            this.stats.wSubmittedTotal = 0;
             this.stats.wSubmitted = 0;
             this.stats.wApproved = 0;
             this.stats.wFlagged = 0;
 
             (wData || []).forEach(row => {
+                this.stats.wAssignedToMe++;
                 const formStatus = row.forms?.status;
                 if (row.status === 'assigned') {
                     if (formStatus === 'flagged') {
@@ -103,24 +110,38 @@ function app() {
                         this.stats.wReady++;
                     }
                 }
-                if (row.status === 'submitted') this.stats.wSubmitted++;
-                if (row.status === 'approved') this.stats.wApproved++;
-                if (row.status === 'flagged') this.stats.wFlagged++;
+                if (row.status === 'submitted') {
+                    this.stats.wSubmitted++;
+                    this.stats.wSubmittedTotal++;
+                }
+                if (row.status === 'approved') {
+                    this.stats.wApproved++;
+                    this.stats.wSubmittedTotal++;
+                }
+                if (row.status === 'flagged') {
+                    this.stats.wFlagged++;
+                    this.stats.wSubmittedTotal++;
+                }
             });
+            this.stats.wWaiting = this.stats.wBlockedForm;
 
             const { data: rData } = await db
                 .from('recordings')
                 .select(`status, sentences (status)`)
                 .eq('creator', this.user.id);
 
+            this.stats.rAssignedToMe = 0;
             this.stats.rReady = 0;
+            this.stats.rWaiting = 0;
             this.stats.rWaitingOnPeer = 0;
             this.stats.rBlockedSentence = 0;
+            this.stats.rSubmittedTotal = 0;
             this.stats.rSubmitted = 0;
             this.stats.rApproved = 0;
             this.stats.rFlagged = 0;
 
             (rData || []).forEach(row => {
+                this.stats.rAssignedToMe++;
                 const sentenceStatus = row.sentences?.status;
                 
                 if (row.status === 'assigned') {
@@ -132,10 +153,20 @@ function app() {
                         this.stats.rReady++;
                     }
                 }
-                if (row.status === 'submitted') this.stats.rSubmitted++;
-                if (row.status === 'approved') this.stats.rApproved++;
-                if (row.status === 'flagged') this.stats.rFlagged++;
+                if (row.status === 'submitted') {
+                    this.stats.rSubmitted++;
+                    this.stats.rSubmittedTotal++;
+                }
+                if (row.status === 'approved') {
+                    this.stats.rApproved++;
+                    this.stats.rSubmittedTotal++;
+                }
+                if (row.status === 'flagged') {
+                    this.stats.rFlagged++;
+                    this.stats.rSubmittedTotal++;
+                }
             });
+            this.stats.rWaiting = this.stats.rWaitingOnPeer + this.stats.rBlockedSentence;
         },
 
         async fetchTasks() {

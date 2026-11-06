@@ -98,6 +98,7 @@
                             <h3 class="text-xl font-bold text-gray-800">Your Activity Dashboard</h3>
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <!-- Writing Tasks Card -->
                                 <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
                                     <h4 class="font-bold text-indigo-600 border-b pb-2">
                                         Writing Tasks
@@ -105,7 +106,7 @@
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between p-2 bg-indigo-50 rounded font-semibold text-indigo-900">
                                             <span>Assigned to me</span>
-                                            <span x-text="stats.wReady + stats.wBlockedForm + stats.wSubmitted + stats.wApproved + stats.wFlagged">0</span>
+                                            <span x-text="stats.wAssignedToMe">0</span>
                                         </div>
                                         <button @click="currentTab = 'write'; fetchTasks()" class="w-full flex justify-between items-center p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg ml-4 cursor-pointer transition shadow-sm font-medium border border-indigo-700">
                                             <span class="flex items-center space-x-1.5">
@@ -116,7 +117,7 @@
                                         </button>
                                         <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
                                             <span class="text-amber-700">Waiting:</span>
-                                            <span class="font-bold text-amber-800" x-text="stats.wBlockedForm">0</span>
+                                            <span class="font-bold text-amber-800" x-text="stats.wWaiting">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-amber-50/60 rounded ml-8">
                                             <span class="text-amber-600">Waiting on Form Revision:</span>
@@ -124,7 +125,7 @@
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
                                             <span class="text-blue-700 font-medium">Submitted:</span>
-                                            <span class="font-bold text-blue-800" x-text="stats.wSubmitted + stats.wApproved + stats.wFlagged">0</span>
+                                            <span class="font-bold text-blue-800" x-text="stats.wSubmittedTotal">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50/60 rounded ml-8">
                                             <span class="text-blue-600">Waiting for Review:</span>
@@ -141,6 +142,7 @@
                                     </div>
                                 </div>
 
+                                <!-- Recording Tasks Card -->
                                 <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 space-y-4">
                                     <h4 class="font-bold text-emerald-600 border-b pb-2">
                                         Recording Tasks
@@ -148,7 +150,7 @@
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between p-2 bg-emerald-50 rounded font-semibold text-emerald-900">
                                             <span>Assigned to me</span>
-                                            <span x-text="stats.rReady + stats.rWaitingOnPeer + stats.rBlockedSentence + stats.rSubmitted + stats.rApproved + stats.rFlagged">0</span>
+                                            <span x-text="stats.rAssignedToMe">0</span>
                                         </div>
                                         <button @click="currentTab = 'record'; fetchTasks()" class="w-full flex justify-between items-center p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg ml-4 cursor-pointer transition shadow-sm font-medium border border-emerald-700">
                                             <span class="flex items-center space-x-1.5">
@@ -159,7 +161,7 @@
                                         </button>
                                         <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
                                             <span class="text-amber-700">Waiting:</span>
-                                            <span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer + stats.rBlockedSentence">0</span>
+                                            <span class="font-bold text-amber-800" x-text="stats.rWaiting">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-amber-50/60 rounded ml-8">
                                             <span class="text-amber-600">Waiting on Peer Writer:</span>
@@ -171,7 +173,7 @@
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
                                             <span class="text-blue-700 font-medium">Submitted:</span>
-                                            <span class="font-bold text-blue-800" x-text="stats.rSubmitted + stats.rApproved + stats.rFlagged">0</span>
+                                            <span class="font-bold text-blue-800" x-text="stats.rSubmittedTotal">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50/60 rounded ml-8">
                                             <span class="text-blue-600">Waiting for Review:</span>
