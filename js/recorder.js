@@ -8,10 +8,12 @@ function audioRecorder(recItem) {
         audioUrl: null,
         recordingTime: 0,
         timerInterval: null,
+        hasReplayed: false,
 
         async startRecording() {
             this.audioChunks = [];
             this.recordingTime = 0;
+            this.hasReplayed = false;
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 window.showToast('Microphone access is not supported in this browser or requires a secure context (HTTPS / localhost).', 'error');
                 return;
@@ -23,18 +25,6 @@ function audioRecorder(recItem) {
                 this.mediaRecorder.onstop = () => {
                     this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
                     this.audioUrl = URL.createObjectURL(this.audioBlob);
-                    
-                    if (this.$nextTick) {
-                        this.$nextTick(() => {
-                            const audioEl = this.$refs.audioPlayer;
-                            if (audioEl) {
-                                audioEl.load();
-                                audioEl.play().catch(err => {
-                                    console.log('Auto-play blocked by Chrome security policy:', err);
-                                });
-                            }
-                        });
-                    }
                 };
                 this.mediaRecorder.start();
                 this.recording = true;
@@ -58,10 +48,18 @@ function audioRecorder(recItem) {
             }
         },
 
+        playAudio() {
+            if (this.$refs.audioPlayer) {
+                this.$refs.audioPlayer.play();
+            }
+            this.hasReplayed = true;
+        },
+
         resetRecording() {
             this.audioBlob = null;
             this.audioUrl = null;
             this.recordingTime = 0;
+            this.hasReplayed = false;
         },
 
         formatTime(seconds) {
