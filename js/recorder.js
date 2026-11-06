@@ -2,6 +2,7 @@ function audioRecorder(recItem) {
     return {
         recording: false,
         mediaRecorder: null,
+        mediaStream: null,
         audioChunks: [],
         audioBlob: null,
         audioUrl: null,
@@ -16,19 +17,27 @@ function audioRecorder(recItem) {
                 return;
             }
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                this.mediaRecorder = new MediaRecorder(stream);
+                this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                this.mediaRecorder = new MediaRecorder(this.mediaStream);
                 this.mediaRecorder.ondataavailable = e => this.audioChunks.push(e.data);
                 this.mediaRecorder.onstop = () => {
                     this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
                     this.audioUrl = URL.createObjectURL(this.audioBlob);
                     
-                    this.$nextTick(() => {
-                        const audioEl = this.$el.querySelector('audio');
+                    const playAudio = () => {
+                        const audioEl = this.$el ? this.$el.querySelector('audio') : document.querySelector('audio');
                         if (audioEl) {
+                            audioEl.src = this.audioUrl;
+                            audioEl.load();
                             audioEl.play().catch(err => console.log('Auto-play prevented by browser policy:', err));
                         }
-                    });
+                    };
+
+                    if (this.$nextTick) {
+                        this.$nextTick(playAudio);
+                    } else {
+                        setTimeout(playAudio, 50);
+                    }
                 };
                 this.mediaRecorder.start();
                 this.recording = true;
@@ -44,6 +53,9 @@ function audioRecorder(recItem) {
         stopRecording() {
             if (this.mediaRecorder && this.recording) {
                 this.mediaRecorder.stop();
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                }
                 this.recording = false;
                 clearInterval(this.timerInterval);
             }
