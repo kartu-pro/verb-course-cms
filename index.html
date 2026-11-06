@@ -105,19 +105,26 @@
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between p-2 bg-indigo-50 rounded font-semibold text-indigo-900">
                                             <span>Assigned to me</span>
-                                            <span x-text="stats.wReady + stats.wBlockedForm">0</span>
+                                            <span x-text="stats.wReady + stats.wBlockedForm + stats.wSubmitted + stats.wApproved + stats.wFlagged">0</span>
                                         </div>
-                                        <div @click="currentTab = 'write'; fetchTasks()" class="flex justify-between p-2 bg-gray-50 rounded ml-4 cursor-pointer hover:bg-gray-100 transition">
-                                            <span class="text-gray-700 font-medium">Ready to Write:</span>
-                                            <span class="font-bold text-gray-800" x-text="stats.wReady">0</span>
-                                        </div>
-                                        <div class="flex justify-between p-2 bg-red-50 rounded ml-4">
-                                            <span class="text-red-700">Waiting on Form Revision:</span>
-                                            <span class="font-bold text-red-800" x-text="stats.wBlockedForm">0</span>
+                                        <button @click="currentTab = 'write'; fetchTasks()" class="w-full flex justify-between items-center p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg ml-4 cursor-pointer transition shadow-sm font-medium border border-indigo-700">
+                                            <span class="flex items-center space-x-1.5">
+                                                <span>Ready to Write</span>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                            </span>
+                                            <span class="font-bold bg-indigo-800 px-2 py-0.5 rounded-full text-xs" x-text="stats.wReady">0</span>
+                                        </button>
+                                        <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
+                                            <span class="text-amber-700">Waiting on Form Revision:</span>
+                                            <span class="font-bold text-amber-800" x-text="stats.wBlockedForm">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
                                             <span class="text-blue-700 font-medium">Submitted:</span>
-                                            <span class="font-bold text-blue-800" x-text="stats.wSubmitted">0</span>
+                                            <span class="font-bold text-blue-800" x-text="stats.wSubmitted + stats.wApproved + stats.wFlagged">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-blue-50/60 rounded ml-8">
+                                            <span class="text-blue-600">Awaiting Approval:</span>
+                                            <span class="font-bold text-blue-700" x-text="stats.wSubmitted">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-emerald-50 rounded ml-8">
                                             <span class="text-emerald-700">Approved:</span>
@@ -137,23 +144,30 @@
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between p-2 bg-emerald-50 rounded font-semibold text-emerald-900">
                                             <span>Assigned to me</span>
-                                            <span x-text="stats.rReady + stats.rWaitingOnPeer + stats.rBlockedSentence">0</span>
+                                            <span x-text="stats.rReady + stats.rWaitingOnPeer + stats.rBlockedSentence + stats.rSubmitted + stats.rApproved + stats.rFlagged">0</span>
                                         </div>
-                                        <div @click="currentTab = 'record'; fetchTasks()" class="flex justify-between p-2 bg-gray-50 rounded ml-4 cursor-pointer hover:bg-gray-100 transition">
-                                            <span class="text-gray-700 font-medium">Ready to Record:</span>
-                                            <span class="font-bold text-gray-800" x-text="stats.rReady">0</span>
-                                        </div>
+                                        <button @click="currentTab = 'record'; fetchTasks()" class="w-full flex justify-between items-center p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg ml-4 cursor-pointer transition shadow-sm font-medium border border-emerald-700">
+                                            <span class="flex items-center space-x-1.5">
+                                                <span>Ready to Record</span>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                            </span>
+                                            <span class="font-bold bg-emerald-800 px-2 py-0.5 rounded-full text-xs" x-text="stats.rReady">0</span>
+                                        </button>
                                         <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
                                             <span class="text-amber-700">Waiting on Peer Writer:</span>
                                             <span class="font-bold text-amber-800" x-text="stats.rWaitingOnPeer">0</span>
                                         </div>
-                                        <div class="flex justify-between p-2 bg-red-50 rounded ml-4">
-                                            <span class="text-red-700">Waiting on Sentence Revision:</span>
-                                            <span class="font-bold text-red-800" x-text="stats.rBlockedSentence">0</span>
+                                        <div class="flex justify-between p-2 bg-amber-50 rounded ml-4">
+                                            <span class="text-amber-700">Waiting on Sentence Revision:</span>
+                                            <span class="font-bold text-amber-800" x-text="stats.rBlockedSentence">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-blue-50 rounded ml-4">
                                             <span class="text-blue-700 font-medium">Submitted:</span>
-                                            <span class="font-bold text-blue-800" x-text="stats.rSubmitted">0</span>
+                                            <span class="font-bold text-blue-800" x-text="stats.rSubmitted + stats.rApproved + stats.rFlagged">0</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-blue-50/60 rounded ml-8">
+                                            <span class="text-blue-600">Awaiting Approval:</span>
+                                            <span class="font-bold text-blue-700" x-text="stats.rSubmitted">0</span>
                                         </div>
                                         <div class="flex justify-between p-2 bg-emerald-50 rounded ml-8">
                                             <span class="text-emerald-700">Approved:</span>
