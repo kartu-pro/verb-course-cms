@@ -91,9 +91,9 @@ function audioRecorder(recItem) {
             }
 
             window.showToast('Audio uploaded and submitted successfully!');
-            setTimeout(() => {
-                window.location.reload();
-            }, 1200);
+            if (window.refreshTasks) {
+                await window.refreshTasks();
+            }
         }
     }
 }

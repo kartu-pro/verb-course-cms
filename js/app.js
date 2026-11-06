@@ -26,8 +26,12 @@ function app() {
         },
 
         async init() {
-            // Expose showToast globally so separate scripts like recorder.js can trigger toasts
+            // Expose showToast and refreshTasks globally so separate scripts like recorder.js can trigger them
             window.showToast = (msg, type) => this.showToast(msg, type);
+            window.refreshTasks = async () => {
+                await this.fetchTasks();
+                await this.fetchStats();
+            };
 
             this.loading = true;
             db.auth.onAuthStateChange(async (event, session) => {
