@@ -184,10 +184,11 @@ function app() {
 
         async fetchTasks() {
             this.loading = true;
+            const userId = this.effectiveUserId;
             const { data: wData } = await db
                 .from('sentences')
                 .select(`id, status, form_id, forms (id, masdar, screeve, subject, object, form, status, reviewer, comment)`)
-                .eq('creator', this.user.id)
+                .eq('creator', userId)
                 .eq('status', 'assigned');
             
             const formMap = {};
@@ -213,7 +214,7 @@ function app() {
             const { data: rData } = await db
                 .from('recordings')
                 .select(`id, status, sentence_id, sentences (id, text, status, reviewer, comment, forms (id, masdar, screeve, subject, object, form))`)
-                .eq('creator', this.user.id)
+                .eq('creator', userId)
                 .eq('status', 'assigned');
 
             const recList = [];
