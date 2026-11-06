@@ -166,7 +166,7 @@
                                         <div class="p-6 bg-gray-50 space-y-6">
                                             <!-- Grammatical Context Header -->
                                             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm space-y-3">
-                                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Grammatical Specifications</h4>
+                                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Verb Form</h4>
                                                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                                                     <div><span class="text-gray-500 block">Masdar</span><strong class="text-gray-900 text-sm" x-text="item.formObj.masdar"></strong></div>
                                                     <div><span class="text-gray-500 block">Screeve</span><strong class="text-gray-900 text-sm capitalize" x-text="item.formObj.screeve"></strong></div>
@@ -180,9 +180,9 @@
                                                 <div class="bg-white p-5 rounded-lg border border-blue-200 shadow-sm space-y-3">
                                                     <div class="flex items-center space-x-2 text-blue-900">
                                                         <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">1</span>
-                                                        <h4 class="font-bold text-sm">Step 1: Verify Verb Accuracy</h4>
+                                                        <h4 class="font-bold text-sm">Step 1: Verify Verb Form Accuracy</h4>
                                                     </div>
-                                                    <p class="text-xs text-gray-600 pl-8">Review the grammatical parameters and target form above. Is this verb entry accurate and ready for sentence composition?</p>
+                                                    <p class="text-xs text-gray-600 pl-8">Review the verb form above. Is it accurate and ready for writing example sentence?</p>
                                                     <div class="flex space-x-3 pl-8 pt-1">
                                                         <button @click="approveForm(item.formObj)" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-emerald-700 font-medium transition shadow-sm">Verify & Approve Form</button>
                                                         <button @click="activeFormObj = item.formObj; flagComment = ''; flagModalOpen = true" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-xs hover:bg-red-100 font-medium transition">Request Revision</button>
@@ -195,12 +195,14 @@
                                                     <div class="bg-indigo-50/70 p-4 rounded-lg border border-indigo-100 text-xs text-indigo-950 space-y-2">
                                                         <div class="flex items-center space-x-2 font-bold uppercase tracking-wider text-indigo-900">
                                                             <span class="w-5 h-5 rounded-full bg-indigo-200 text-indigo-800 flex items-center justify-center text-[10px]">2</span>
-                                                            <span>Step 2: Sentence Creation Requirements</span>
+                                                            <span>Step 2: Write Example Sentences</span>
                                                         </div>
                                                         <ul class="list-disc pl-9 space-y-1 text-indigo-900/90">
-                                                            <li>Must contain target verb form: <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-bold" x-text="item.formObj.form"></code></li>
-                                                            <li>Must be a complete, natural-sounding Georgian sentence.</li>
-                                                            <li>Must end with a valid punctuation mark (. ! ?).</li>
+                                                            <li>Use the target verb form: <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-bold" x-text="item.formObj.form"></code></li>
+                                                            <li>Write common, natural-sounding Georgian examples</li>
+                                                            <li>Limit yourself to easy, beginer-level vocab</li>
+                                                            <li>Try to mix up the words you use (don't keep repeating the same words)</li>
+                                                            <li>End each example with a valid punctuation mark (. ! ?).</li>
                                                         </ul>
                                                     </div>
 
