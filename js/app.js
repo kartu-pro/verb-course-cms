@@ -15,7 +15,10 @@ function app() {
         uniqueCombos: [],
         adminRecordings: [],
         adminFlags: [],
-        selectedStatsUserId: '',
+        selectedImpersonateUserId: '',
+        get effectiveUserId() {
+            return (this.profile?.role === 'admin' && this.selectedImpersonateUserId) ? this.selectedImpersonateUserId : this.user?.id;
+        },
         stats: { 
             wAssignedToMe: 0, wReady: 0, wWaiting: 0, wBlockedForm: 0, wSubmittedTotal: 0, wSubmitted: 0, wApproved: 0, wFlagged: 0, 
             rAssignedToMe: 0, rReady: 0, rWaiting: 0, rWaitingOnPeer: 0, rBlockedSentence: 0, rSubmittedTotal: 0, rSubmitted: 0, rApproved: 0, rFlagged: 0 
@@ -64,6 +67,9 @@ function app() {
         async fetchProfile() {
             const { data } = await db.from('users').select('*').eq('id', this.user.id).single();
             this.profile = data;
+            if (this.profile?.role === 'admin') {
+                await this.fetchContributors();
+            }
         },
 
         async login() {
@@ -92,7 +98,7 @@ function app() {
         },
 
         async fetchStats(targetUserId = null) {
-            const userId = targetUserId || this.user.id;
+            const userId = targetUserId || this.effectiveUserId;
             const { data: wData } = await db
                 .from('sentences')
                 .select(`status, forms (status)`)

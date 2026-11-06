@@ -34,6 +34,17 @@
         </div>
         <template x-if="user">
             <div class="flex items-center space-x-4">
+                <template x-if="profile && profile.role === 'admin'">
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs text-gray-500 font-medium whitespace-nowrap hidden sm:inline">View As:</label>
+                        <select x-model="selectedImpersonateUserId" @change="fetchStats(); fetchTasks()" class="p-1.5 border rounded border-gray-300 text-xs bg-white">
+                            <option value="">(Myself / Admin)</option>
+                            <template x-for="u in contributors" :key="u.id">
+                                <option :value="u.id" x-text="u.username"></option>
+                            </template>
+                        </select>
+                    </div>
+                </template>
                 <span class="text-sm text-gray-600 hidden sm:inline" x-text="user.email"></span>
                 <button @click="logout()" class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200">Sign Out</button>
             </div>
@@ -93,21 +104,10 @@
 
                 <div x-show="!loading">
                     <!-- STATS TAB -->
-                    <template x-if="currentTab === 'stats'" x-init="if(profile?.role === 'admin' && contributors.length === 0) fetchContributors()">
+                    <template x-if="currentTab === 'stats'">
                         <div class="space-y-6 max-w-3xl mx-auto">
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                 <h3 class="text-xl font-bold text-gray-800">Your Activity Dashboard</h3>
-                                <template x-if="profile && profile.role === 'admin'">
-                                    <div class="flex items-center space-x-2 w-full sm:w-auto">
-                                        <label class="text-xs text-gray-500 font-medium whitespace-nowrap">View User:</label>
-                                        <select x-model="selectedStatsUserId" @change="fetchStats(selectedStatsUserId)" class="p-2 border rounded border-gray-300 text-sm bg-white w-full sm:w-48">
-                                            <option value="">(Myself)</option>
-                                            <template x-for="u in contributors" :key="u.id">
-                                                <option :value="u.id" x-text="u.username"></option>
-                                            </template>
-                                        </select>
-                                    </div>
-                                </template>
                             </div>
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
