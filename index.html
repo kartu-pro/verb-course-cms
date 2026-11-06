@@ -314,11 +314,13 @@
                                                 <div class="bg-white p-5 rounded-lg border border-emerald-200 shadow-sm space-y-4" x-data="audioRecorder(recItem)">
                                                     <div class="flex items-center space-x-2 text-emerald-900">
                                                         <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">2</span>
-                                                        <h4 class="font-bold text-sm">Step 2: Audio Recording Guidelines & Controls</h4>
+                                                        <h4 class="font-bold text-sm">Step 2: Record Audio</h4>
                                                     </div>
                                                     <div class="text-xs text-gray-600 pl-8 space-y-1">
                                                         <p>• Record in a quiet environment with minimal background noise.</p>
                                                         <p>• Speak clearly at a natural, steady pace with clear pronunciation.</p>
+                                                        <p>• Use the best microphone you have.</p>
+                                                        <p>• Relisten to your recording to make sure it is high quality.</p>
                                                     </div>
                                                     <div class="pl-8 pt-2 flex items-center space-x-3">
                                                         <template x-if="!recording && !audioUrl">
@@ -341,7 +343,7 @@
                                                                 <audio :src="audioUrl" controls class="h-9 flex-grow"></audio>
                                                                 <div class="flex items-center space-x-2">
                                                                     <button @click="resetRecording()" class="px-3 py-2 border rounded-lg text-xs text-gray-600 hover:bg-gray-100 font-medium">Re-record</button>
-                                                                    <button @click="uploadAndComplete(recItem)" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-indigo-700 font-semibold transition shadow-sm">Upload & Submit</button>
+                                                                    <button @click="uploadAndComplete(recItem); expandedId = null" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-indigo-700 font-semibold transition shadow-sm">Upload & Submit</button>
                                                                 </div>
                                                             </div>
                                                         </template>
