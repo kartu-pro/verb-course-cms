@@ -222,7 +222,7 @@
                                                             <input type="text" x-model="exampleInputs[item.formObj.id + '_2']" placeholder="დაწერეთ მესამე მაგალითი..." class="w-full p-2.5 border rounded-lg border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                             <p class="text-xs text-red-600 mt-1" x-show="sentenceErrors[item.formObj.id + '_2']" x-text="sentenceErrors[item.formObj.id + '_2']"></p>
                                                         </div>
-                                                        <button @click="submitSentences(item)" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm hover:bg-indigo-700 font-semibold transition shadow-sm">Submit All 3 Sentences</button>
+                                                        <button @click="submitSentences(item); expandedId = null" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm hover:bg-indigo-700 font-semibold transition shadow-sm">Submit All 3 Sentences</button>
                                                     </div>
                                                 </div>
                                             </template>
