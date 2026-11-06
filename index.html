@@ -133,68 +133,95 @@
                     <!-- WRITING TAB -->
                     <template x-if="currentTab === 'write'">
                         <div class="space-y-4 max-w-3xl mx-auto" x-data="{ expandedId: null, exampleInputs: {}, flagModalOpen: false, activeFormObj: null, flagComment: '' }">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">Assigned Writing Tasks</h3>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-gray-800">Assigned Writing Tasks</h3>
+                                <template x-if="expandedId">
+                                    <button @click="expandedId = null" class="inline-flex items-center space-x-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition font-medium">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        <span>Back to list</span>
+                                    </button>
+                                </template>
+                            </div>
                             
                             <template x-for="item in flatWritingTasks" :key="item.formObj.id">
-                                <div class="border rounded-lg bg-white shadow-sm overflow-hidden">
-                                    <div @click="expandedId = expandedId === item.formObj.id ? null : item.formObj.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition">
+                                <div x-show="!expandedId || expandedId === item.formObj.id" class="border rounded-xl bg-white shadow-sm overflow-hidden transition">
+                                    <div @click="expandedId = expandedId === item.formObj.id ? null : item.formObj.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition border-b border-gray-100">
                                         <div class="flex flex-wrap items-center gap-3 text-sm">
                                             <span class="font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded" x-text="item.formObj.form"></span>
                                             <span class="text-gray-600 font-medium" x-text="'Masdar: ' + item.formObj.masdar"></span>
                                             <span class="text-gray-500 capitalize" x-text="'Screeve: ' + item.formObj.screeve"></span>
                                             <span class="text-xs px-2 py-0.5 rounded uppercase font-medium" :class="item.formObj.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : (item.formObj.status === 'flagged' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800')" x-text="formatStatus(item.formObj.status)"></span>
                                         </div>
-                                        <span class="text-gray-400 text-xs font-medium" x-text="expandedId === item.formObj.id ? '▲ Collapse' : '▼ Expand'"></span>
+                                        <template x-if="expandedId === item.formObj.id">
+                                            <button @click.stop="expandedId = null" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition" title="Close details">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                        </template>
+                                        <template x-if="expandedId !== item.formObj.id">
+                                            <span class="text-gray-400 text-xs font-medium">▼ Expand</span>
+                                        </template>
                                     </div>
 
                                     <template x-if="expandedId === item.formObj.id">
-                                        <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-4">
-                                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-white p-3 rounded border">
-                                                <div><span class="text-gray-400 block">Masdar</span><strong class="text-gray-800" x-text="item.formObj.masdar"></strong></div>
-                                                <div><span class="text-gray-400 block">Screeve</span><strong class="text-gray-800 capitalize" x-text="item.formObj.screeve"></strong></div>
-                                                <div><span class="text-gray-400 block">Subject</span><strong class="text-gray-800" x-text="item.formObj.subject || 'N/A'"></strong></div>
-                                                <div><span class="text-gray-400 block">Object</span><strong class="text-gray-800" x-text="item.formObj.object || 'N/A'"></strong></div>
-                                                <div><span class="text-gray-400 block">Form</span><strong class="text-gray-800" x-text="item.formObj.form || 'N/A'"></strong></div>
+                                        <div class="p-6 bg-gray-50 space-y-6">
+                                            <!-- Grammatical Context Header -->
+                                            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm space-y-3">
+                                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Grammatical Specifications</h4>
+                                                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                                                    <div><span class="text-gray-500 block">Masdar</span><strong class="text-gray-900 text-sm" x-text="item.formObj.masdar"></strong></div>
+                                                    <div><span class="text-gray-500 block">Screeve</span><strong class="text-gray-900 text-sm capitalize" x-text="item.formObj.screeve"></strong></div>
+                                                    <div><span class="text-gray-500 block">Subject</span><strong class="text-gray-900 text-sm" x-text="item.formObj.subject || 'N/A'"></strong></div>
+                                                    <div><span class="text-gray-500 block">Object</span><strong class="text-gray-900 text-sm" x-text="item.formObj.object || 'N/A'"></strong></div>
+                                                    <div class="col-span-2 sm:col-span-1"><span class="text-gray-500 block">Target Form</span><strong class="text-indigo-600 text-sm font-bold" x-text="item.formObj.form || 'N/A'"></strong></div>
+                                                </div>
                                             </div>
 
                                             <template x-if="item.formObj.status === 'assigned'">
-                                                <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded space-y-2">
-                                                    <p class="text-xs font-bold text-blue-900 uppercase">Step 1: Verify Verb Details</p>
-                                                    <p class="text-xs text-blue-800">Check if this verb form is correct before writing sentences.</p>
-                                                    <div class="flex space-x-3 pt-1">
-                                                        <button @click="approveForm(item.formObj)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 font-medium">Verify & Approve</button>
-                                                        <button @click="activeFormObj = item.formObj; flagComment = ''; flagModalOpen = true" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">Request Revision</button>
+                                                <div class="bg-white p-5 rounded-lg border border-blue-200 shadow-sm space-y-3">
+                                                    <div class="flex items-center space-x-2 text-blue-900">
+                                                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">1</span>
+                                                        <h4 class="font-bold text-sm">Step 1: Verify Verb Accuracy</h4>
+                                                    </div>
+                                                    <p class="text-xs text-gray-600 pl-8">Review the grammatical parameters and target form above. Is this verb entry accurate and ready for sentence composition?</p>
+                                                    <div class="flex space-x-3 pl-8 pt-1">
+                                                        <button @click="approveForm(item.formObj)" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-emerald-700 font-medium transition shadow-sm">Verify & Approve Form</button>
+                                                        <button @click="activeFormObj = item.formObj; flagComment = ''; flagModalOpen = true" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-xs hover:bg-red-100 font-medium transition">Request Revision</button>
                                                     </div>
                                                 </div>
                                             </template>
 
                                             <template x-if="item.formObj.status === 'approved'">
-                                                <div class="space-y-3 pt-2">
-                                                    <div class="bg-indigo-50 p-3 rounded border border-indigo-100 text-xs text-indigo-900 space-y-1">
-                                                        <p class="font-bold uppercase tracking-wider">Writing Guidelines</p>
-                                                        <p>• Must contain target verb form: <code class="bg-indigo-100 px-1 py-0.5 rounded text-indigo-900 font-bold" x-text="item.formObj.form"></code></p>
-                                                        <p>• Must end with a valid punctuation mark (. ! ?).</p>
+                                                <div class="space-y-5">
+                                                    <div class="bg-indigo-50/70 p-4 rounded-lg border border-indigo-100 text-xs text-indigo-950 space-y-2">
+                                                        <div class="flex items-center space-x-2 font-bold uppercase tracking-wider text-indigo-900">
+                                                            <span class="w-5 h-5 rounded-full bg-indigo-200 text-indigo-800 flex items-center justify-center text-[10px]">2</span>
+                                                            <span>Step 2: Sentence Creation Requirements</span>
+                                                        </div>
+                                                        <ul class="list-disc pl-9 space-y-1 text-indigo-900/90">
+                                                            <li>Must contain target verb form: <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-bold" x-text="item.formObj.form"></code></li>
+                                                            <li>Must be a complete, natural-sounding Georgian sentence.</li>
+                                                            <li>Must end with a valid punctuation mark (. ! ?).</li>
+                                                        </ul>
                                                     </div>
 
-                                                    <div class="space-y-3">
+                                                    <div class="space-y-4 bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
                                                         <div>
-                                                            <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 1</label>
-                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_0']" placeholder="დაწერეთ პირველი მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
+                                                            <label class="block text-xs font-semibold text-gray-700 mb-1">Example Sentence 1</label>
+                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_0']" placeholder="დაწერეთ პირველი მაგალითი..." class="w-full p-2.5 border rounded-lg border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                             <p class="text-xs text-red-600 mt-1" x-show="sentenceErrors[item.formObj.id + '_0']" x-text="sentenceErrors[item.formObj.id + '_0']"></p>
                                                         </div>
                                                         <div>
-                                                            <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 2</label>
-                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_1']" placeholder="დაწერეთ მეორე მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
+                                                            <label class="block text-xs font-semibold text-gray-700 mb-1">Example Sentence 2</label>
+                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_1']" placeholder="დაწერეთ მეორე მაგალითი..." class="w-full p-2.5 border rounded-lg border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                             <p class="text-xs text-red-600 mt-1" x-show="sentenceErrors[item.formObj.id + '_1']" x-text="sentenceErrors[item.formObj.id + '_1']"></p>
                                                         </div>
                                                         <div>
-                                                            <label class="block text-xs font-medium text-gray-700 mb-0.5">Example 3</label>
-                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_2']" placeholder="დაწერეთ მესამე მაგალითი..." class="w-full p-2 border rounded border-gray-300 text-sm bg-white">
+                                                            <label class="block text-xs font-semibold text-gray-700 mb-1">Example Sentence 3</label>
+                                                            <input type="text" x-model="exampleInputs[item.formObj.id + '_2']" placeholder="დაწერეთ მესამე მაგალითი..." class="w-full p-2.5 border rounded-lg border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                             <p class="text-xs text-red-600 mt-1" x-show="sentenceErrors[item.formObj.id + '_2']" x-text="sentenceErrors[item.formObj.id + '_2']"></p>
                                                         </div>
+                                                        <button @click="submitSentences(item)" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm hover:bg-indigo-700 font-semibold transition shadow-sm">Submit All 3 Sentences</button>
                                                     </div>
-
-                                                    <button @click="submitSentences(item)" class="w-full bg-indigo-600 text-white py-2 rounded text-sm hover:bg-indigo-700 font-medium">Submit All 3 Sentences</button>
                                                 </div>
                                             </template>
                                         </div>
@@ -221,61 +248,99 @@
                     <!-- RECORDING TAB -->
                     <template x-if="currentTab === 'record'">
                         <div class="space-y-4 max-w-3xl mx-auto" x-data="{ expandedId: null, recFlagModalOpen: false, activeRecObj: null, recFlagComment: '' }">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">Assigned Recording Tasks</h3>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-gray-800">Assigned Recording Tasks</h3>
+                                <template x-if="expandedId">
+                                    <button @click="expandedId = null" class="inline-flex items-center space-x-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition font-medium">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        <span>Back to list</span>
+                                    </button>
+                                </template>
+                            </div>
                             
                             <template x-for="recItem in flatRecordingTasks" :key="recItem.id">
-                                <div class="border rounded-lg bg-white shadow-sm overflow-hidden">
-                                    <div @click="expandedId = expandedId === recItem.id ? null : recItem.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition">
+                                <div x-show="!expandedId || expandedId === recItem.id" class="border rounded-xl bg-white shadow-sm overflow-hidden transition">
+                                    <div @click="expandedId = expandedId === recItem.id ? null : recItem.id" class="p-4 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition border-b border-gray-100">
                                         <div class="flex flex-wrap items-center gap-3 text-sm">
                                             <span class="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded" x-text="recItem.form.form"></span>
                                             <span class="text-gray-600 font-medium" x-text="'Masdar: ' + recItem.form.masdar"></span>
                                             <span class="text-gray-500 capitalize" x-text="'Screeve: ' + recItem.form.screeve"></span>
                                             <span class="text-xs px-2 py-0.5 rounded uppercase font-medium" :class="recItem.sentence.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : (recItem.sentence.status === 'flagged' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')" x-text="'Sentence: ' + formatStatus(recItem.sentence.status)"></span>
                                         </div>
-                                        <span class="text-gray-400 text-xs font-medium" x-text="expandedId === recItem.id ? '▲ Collapse' : '▼ Expand'"></span>
+                                        <template x-if="expandedId === recItem.id">
+                                            <button @click.stop="expandedId = null" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition" title="Close details">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                        </template>
+                                        <template x-if="expandedId !== recItem.id">
+                                            <span class="text-gray-400 text-xs font-medium">▼ Expand</span>
+                                        </template>
                                     </div>
 
                                     <template x-if="expandedId === recItem.id">
-                                        <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-4">
-                                            <div class="bg-white p-3.5 rounded border border-gray-200 space-y-1">
-                                                <span class="text-xs text-gray-400 uppercase font-semibold block">Sentence Written by Contributor:</span>
-                                                <p class="text-gray-900 font-medium text-base" x-text="recItem.sentence.text"></p>
+                                        <div class="p-6 bg-gray-50 space-y-6">
+                                            <!-- Grammatical Context Header -->
+                                            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm space-y-3">
+                                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Verb Context</h4>
+                                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                                                    <div><span class="text-gray-500 block">Masdar</span><strong class="text-gray-900 text-sm" x-text="recItem.form.masdar"></strong></div>
+                                                    <div><span class="text-gray-500 block">Screeve</span><strong class="text-gray-900 text-sm capitalize" x-text="recItem.form.screeve"></strong></div>
+                                                    <div><span class="text-gray-500 block">Target Form</span><strong class="text-emerald-700 text-sm font-bold" x-text="recItem.form.form font-bold"></strong></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-2">
+                                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Target Sentence to Record</span>
+                                                <p class="text-gray-900 font-semibold text-lg leading-relaxed" x-text="recItem.sentence.text"></p>
                                             </div>
 
                                             <template x-if="recItem.sentence.status === 'submitted'">
-                                                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded space-y-2">
-                                                    <p class="text-xs font-bold text-amber-900 uppercase">Step 1: Review Sentence Quality</p>
-                                                    <p class="text-xs text-amber-800">Check if it is clear, natural souding, and mistake free before recording.</p>
-                                                    <div class="flex space-x-3 pt-1">
-                                                        <button @click="approveSentence(recItem)" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 font-medium">Approve Sentence</button>
-                                                        <button @click="activeRecObj = recItem; recFlagComment = ''; recFlagModalOpen = true" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">Request Revision</button>
+                                                <div class="bg-white p-5 rounded-lg border border-amber-200 shadow-sm space-y-3">
+                                                    <div class="flex items-center space-x-2 text-amber-900">
+                                                        <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">1</span>
+                                                        <h4 class="font-bold text-sm">Step 1: Sentence Review & Verification</h4>
+                                                    </div>
+                                                    <p class="text-xs text-gray-600 pl-8">Check if the sentence above is clear, grammatically sound, and natural sounding before recording your audio.</p>
+                                                    <div class="flex space-x-3 pl-8 pt-1">
+                                                        <button @click="approveSentence(recItem)" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-emerald-700 font-medium transition shadow-sm">Approve Sentence</button>
+                                                        <button @click="activeRecObj = recItem; recFlagComment = ''; recFlagModalOpen = true" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-xs hover:bg-red-100 font-medium transition">Request Revision</button>
                                                     </div>
                                                 </div>
                                             </template>
 
                                             <template x-if="recItem.sentence.status === 'approved'">
-                                                <div class="pt-2 bg-emerald-50/50 p-4 rounded border border-emerald-100" x-data="audioRecorder(recItem)">
-                                                    <p class="text-xs font-bold text-emerald-900 uppercase mb-2">Step 2: Record Audio</p>
-                                                    <div class="text-xs text-emerald-800 space-y-1 mb-3">
-                                                        <p>• Record in a quiet room with no background noise.</p>
-                                                        <p>• Use a good microphone.</p>
-                                                        <p>• Speak clearly and steadily at a natural pace.</p>
+                                                <div class="bg-white p-5 rounded-lg border border-emerald-200 shadow-sm space-y-4" x-data="audioRecorder(recItem)">
+                                                    <div class="flex items-center space-x-2 text-emerald-900">
+                                                        <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">2</span>
+                                                        <h4 class="font-bold text-sm">Step 2: Audio Recording Guidelines & Controls</h4>
                                                     </div>
-                                                    <div class="flex items-center space-x-3">
+                                                    <div class="text-xs text-gray-600 pl-8 space-y-1">
+                                                        <p>• Record in a quiet environment with minimal background noise.</p>
+                                                        <p>• Speak clearly at a natural, steady pace with clear pronunciation.</p>
+                                                    </div>
+                                                    <div class="pl-8 pt-2 flex items-center space-x-3">
                                                         <template x-if="!recording && !audioUrl">
-                                                            <button @click="startRecording()" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs hover:bg-red-700 font-medium">🔴 Start Recording</button>
+                                                            <button @click="startRecording()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-red-700 font-semibold transition shadow-sm flex items-center space-x-2">
+                                                                <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
+                                                                <span>Start Recording</span>
+                                                            </button>
                                                         </template>
                                                         <template x-if="recording">
-                                                            <div class="flex items-center space-x-3">
-                                                                <button @click="stopRecording()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs animate-pulse font-medium">⏹️ Stop Recording</button>
-                                                                <span class="text-xs font-mono font-bold text-red-600" x-text="formatTime(recordingTime)"></span>
+                                                            <div class="flex items-center space-x-4">
+                                                                <button @click="stopRecording()" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-xs animate-pulse font-semibold transition shadow-sm flex items-center space-x-2">
+                                                                    <span class="w-2.5 h-2.5 rounded-sm bg-red-500"></span>
+                                                                    <span>Stop Recording</span>
+                                                                </button>
+                                                                <span class="text-sm font-mono font-bold text-red-600" x-text="formatTime(recordingTime)"></span>
                                                             </div>
                                                         </template>
                                                         <template x-if="audioUrl">
-                                                            <div class="flex items-center space-x-2 w-full">
-                                                                <audio :src="audioUrl" controls class="h-8 flex-grow"></audio>
-                                                                <button @click="resetRecording()" class="text-xs text-gray-600 hover:underline">Re-record</button>
-                                                                <button @click="uploadAndComplete(recItem)" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs hover:bg-indigo-700 font-medium">Upload & Submit</button>
+                                                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
+                                                                <audio :src="audioUrl" controls class="h-9 flex-grow"></audio>
+                                                                <div class="flex items-center space-x-2">
+                                                                    <button @click="resetRecording()" class="px-3 py-2 border rounded-lg text-xs text-gray-600 hover:bg-gray-100 font-medium">Re-record</button>
+                                                                    <button @click="uploadAndComplete(recItem)" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-indigo-700 font-semibold transition shadow-sm">Upload & Submit</button>
+                                                                </div>
                                                             </div>
                                                         </template>
                                                     </div>
