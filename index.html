@@ -281,16 +281,6 @@
 
                                     <template x-if="expandedId === recItem.id">
                                         <div class="p-6 bg-gray-50 space-y-6">
-                                            <!-- Grammatical Context Header -->
-                                            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm space-y-3">
-                                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Verb Context</h4>
-                                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                                                    <div><span class="text-gray-500 block">Masdar</span><strong class="text-gray-900 text-sm" x-text="recItem.form.masdar"></strong></div>
-                                                    <div><span class="text-gray-500 block">Screeve</span><strong class="text-gray-900 text-sm capitalize" x-text="recItem.form.screeve"></strong></div>
-                                                    <div><span class="text-gray-500 block">Target Form</span><strong class="text-emerald-700 text-sm font-bold" x-text="recItem.form.form font-bold"></strong></div>
-                                                </div>
-                                            </div>
-
                                             <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-2">
                                                 <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Target Sentence to Record</span>
                                                 <p class="text-gray-900 font-semibold text-lg leading-relaxed" x-text="recItem.sentence.text"></p>
@@ -302,7 +292,7 @@
                                                         <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">1</span>
                                                         <h4 class="font-bold text-sm">Step 1: Sentence Review & Verification</h4>
                                                     </div>
-                                                    <p class="text-xs text-gray-600 pl-8">Check if the sentence above is clear, grammatically sound, and natural sounding before recording your audio.</p>
+                                                    <p class="text-xs text-gray-600 pl-8">Check if the sentence above is clear, grammatically correct, and natural sounding before recording your audio.</p>
                                                     <div class="flex space-x-3 pl-8 pt-1">
                                                         <button @click="approveSentence(recItem)" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-emerald-700 font-medium transition shadow-sm">Approve Sentence</button>
                                                         <button @click="activeRecObj = recItem; recFlagComment = ''; recFlagModalOpen = true" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-xs hover:bg-red-100 font-medium transition">Request Revision</button>
