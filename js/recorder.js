@@ -24,19 +24,16 @@ function audioRecorder(recItem) {
                     this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
                     this.audioUrl = URL.createObjectURL(this.audioBlob);
                     
-                    const playAudio = () => {
-                        const audioEl = this.$el ? this.$el.querySelector('audio') : document.querySelector('audio');
-                        if (audioEl) {
-                            audioEl.src = this.audioUrl;
-                            audioEl.load();
-                            audioEl.play().catch(err => console.log('Auto-play prevented by browser policy:', err));
-                        }
-                    };
-
                     if (this.$nextTick) {
-                        this.$nextTick(playAudio);
-                    } else {
-                        setTimeout(playAudio, 50);
+                        this.$nextTick(() => {
+                            const audioEl = this.$refs.audioPlayer;
+                            if (audioEl) {
+                                audioEl.load();
+                                audioEl.play().catch(err => {
+                                    console.log('Auto-play blocked by Chrome security policy:', err);
+                                });
+                            }
+                        });
                     }
                 };
                 this.mediaRecorder.start();

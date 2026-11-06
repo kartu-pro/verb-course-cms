@@ -328,15 +328,13 @@
                                                                 <span class="text-sm font-mono font-bold text-red-600" x-text="formatTime(recordingTime)"></span>
                                                             </div>
                                                         </template>
-                                                        <template x-if="audioUrl">
-                                                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
-                                                                <audio :src="audioUrl" controls class="h-9 flex-grow"></audio>
-                                                                <div class="flex items-center space-x-2">
-                                                                    <button @click="resetRecording()" class="px-3 py-2 border rounded-lg text-xs text-gray-600 hover:bg-gray-100 font-medium">Re-record</button>
-                                                                    <button @click="uploadAndComplete(recItem); expandedId = null" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-indigo-700 font-semibold transition shadow-sm">Upload & Submit</button>
-                                                                </div>
+                                                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full" x-show="audioUrl" style="display: none;">
+                                                            <audio x-ref="audioPlayer" :src="audioUrl" controls class="h-9 flex-grow"></audio>
+                                                            <div class="flex items-center space-x-2">
+                                                                <button @click="resetRecording()" class="px-3 py-2 border rounded-lg text-xs text-gray-600 hover:bg-gray-100 font-medium">Re-record</button>
+                                                                <button @click="uploadAndComplete(recItem); expandedId = null" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs hover:bg-indigo-700 font-semibold transition shadow-sm">Upload & Submit</button>
                                                             </div>
-                                                        </template>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </template>
